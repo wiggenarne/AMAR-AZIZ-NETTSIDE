@@ -29,4 +29,18 @@ const series = defineCollection({
   }),
 });
 
-export const collections = { artworks, series };
+const exhibitions = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/exhibitions" }),
+  schema: z.object({
+    title: z.object({ no: z.string(), en: z.string() }),
+    venue: z.string(),
+    city: z.string(),
+    country: z.string().default("Norway"),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    type: z.enum(["solo", "group"]).default("group"),
+    link: z.string().url().optional(),
+  }),
+});
+
+export const collections = { artworks, series, exhibitions };
