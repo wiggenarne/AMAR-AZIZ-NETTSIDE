@@ -1,0 +1,62 @@
+name: Fetch NorthArt artworks
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Max number of artworks to import (blank = all)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run scraper
+        run: |
+          if [ -n "${{ inputs.limit }}" ]; then
+            node scripts/fetch-northart.js --limit=${{ inputs.limit }}
+          else
+            node scripts/fetch-northart.js
+          fi
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: northart-import
+          delete-branch: true
+          title: "chore: import artworks from NorthArt"
+          commit-message: "chore: import artworks from NorthArt"
+          body: |
+            Automatic import from `shop.northart.no` (Amar Aziz).
+
+            **Manual review needed:**
+            - `title.en`, `medium.en`, `description.en` are empty — translate manually.
+            - `description.no` may be empty for works with no extended description on NorthArt.
+            - `series` is omitted (optional in schema) — assign per artwork in review if desired.
+            - `featured` defaults to `false`, `order` starts at 100 — adjust for showcase placement.
+
+            **What changed:**
+            - New artwork markdown in `src/content/artworks/`
+            - New images in `public/images/artworks/` (capped at 2000×2000, quality 90)
+          add-paths: |
+            public/images/artworks/**
+            src/content/artworks/**
