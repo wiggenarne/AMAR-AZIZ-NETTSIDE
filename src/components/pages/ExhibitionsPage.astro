@@ -34,28 +34,32 @@ const fmt = (d: Date) =>
 ---
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 pt-16 md:pt-20 pb-12"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
-  <h1 class="font-display text-4xl md:text-6xl mb-6">
+  <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-5 sm:mb-6">
     {t(lang, "exhibitions.title")}
   </h1>
-  <p class="max-w-[var(--container-prose)] text-lg text-[var(--color-muted)]">
+  <p
+    class="max-w-[var(--container-prose)] text-base sm:text-lg text-[var(--color-muted)]"
+  >
     {t(lang, "exhibitions.intro")}
   </p>
 </section>
 
-<section class="max-w-[var(--container-page)] mx-auto px-6 pb-24">
+<section class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
   {
     grouped.length === 0 ? (
       <p class="text-[var(--color-muted)]">{t(lang, "exhibitions.empty")}</p>
     ) : (
       grouped.map((g) => (
-        <div class="border-t border-[var(--color-border)] py-10">
-          <h2 class="font-display text-3xl mb-8 tabular-nums">{g.year}</h2>
-          <ul class="space-y-8 list-none p-0">
+        <div class="border-t border-[var(--color-border)] py-8 sm:py-10">
+          <h2 class="font-display text-2xl sm:text-3xl mb-6 sm:mb-8 tabular-nums">
+            {g.year}
+          </h2>
+          <ul class="space-y-6 sm:space-y-8 list-none p-0">
             {g.items.map((ex) => (
               <li>
-                <article class="grid gap-2 md:grid-cols-[12rem_1fr] md:gap-8">
+                <article class="grid gap-1 md:grid-cols-[12rem_1fr] md:gap-8">
                   <p class="text-sm text-[var(--color-muted)] tabular-nums">
                     {fmt(ex.data.startDate)}
                     {ex.data.endDate ? ` – ${fmt(ex.data.endDate)}` : ""}

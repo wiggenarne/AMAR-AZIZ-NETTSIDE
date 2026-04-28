@@ -13,27 +13,27 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
 ---
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 pt-16 md:pt-20 pb-12"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
-  <h1 class="font-display text-4xl md:text-6xl mb-6">
+  <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-5 sm:mb-6">
     {t(lang, "contact.heading")}
   </h1>
   <p
-    class="max-w-[var(--container-prose)] text-lg text-[var(--color-muted)] mb-10"
+    class="max-w-[var(--container-prose)] text-base sm:text-lg text-[var(--color-muted)] mb-8 sm:mb-10"
   >
     {t(lang, "contact.body")}
   </p>
 
-  <p class="flex flex-wrap gap-4">
+  <p class="flex flex-wrap gap-3 sm:gap-4">
     <a
       href={mailto}
-      class="inline-block px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
+      class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
     >
       {t(lang, "contact.email")}
     </a>
     <a
-      href={`tel:${artist.phone}`}
-      class="inline-block px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+      href={`tel:${artist.phoneRaw}`}
+      class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
       {t(lang, "contact.phone")}
     </a>
@@ -41,7 +41,7 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
 </section>
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 py-16 border-t border-[var(--color-border)] grid gap-12 md:grid-cols-3"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-12 sm:py-16 border-t border-[var(--color-border)] grid gap-10 sm:gap-12 sm:grid-cols-2 lg:grid-cols-3"
 >
   <div>
     <h2
@@ -61,7 +61,7 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
       {t(lang, "contact.phone.label")}
     </h2>
     <p class="font-display text-lg">
-      <a href={`tel:${artist.phone}`}>{artist.phone}</a>
+      <a href={`tel:${artist.phoneRaw}`}>{artist.phone}</a>
     </p>
   </div>
 
@@ -81,7 +81,7 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
 </section>
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 py-16 border-t border-[var(--color-border)]"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-12 sm:py-16 border-t border-[var(--color-border)]"
 >
   <h2
     class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)] mb-4"
