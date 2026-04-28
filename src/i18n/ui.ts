@@ -72,6 +72,8 @@ export const ui = {
     "404.cta": "Til forsiden",
     "menu.open": "Åpne meny",
     "menu.close": "Lukk meny",
+    "buy.cta": "Kjøp på",
+    "buy.northart": "Se alle verk til salgs på NorthArt",
   },
   en: {
     "nav.home": "Home",
@@ -139,6 +141,8 @@ export const ui = {
     "404.cta": "Go to homepage",
     "menu.open": "Open menu",
     "menu.close": "Close menu",
+    "buy.cta": "Buy on",
+    "buy.northart": "View all works for sale on NorthArt",
   },
 } as const;
 

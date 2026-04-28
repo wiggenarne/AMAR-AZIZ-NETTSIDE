@@ -16,6 +16,8 @@ const artworks = defineCollection({
     available: z.boolean().default(true),
     featured: z.boolean().default(false),
     order: z.number().default(0),
+    buyAtUrl: z.string().url().optional(),
+    buyAtLabel: z.string().default("NorthArt"),
   }),
 });
 

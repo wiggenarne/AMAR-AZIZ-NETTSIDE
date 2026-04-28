@@ -77,8 +77,13 @@ src/
    available: true
    featured: false  # vises på forsiden hvis true
    order: 7  # lavere tall = vises først
+   buyAtUrl: "https://shop.northart.no/<sti>"  # valgfritt: lenke til NorthArt-listing
+   buyAtLabel: "NorthArt"  # valgfritt: hvilken nettbutikk (default NorthArt)
    ---
    ```
+
+   Når `buyAtUrl` er satt vises det en grønn «Kjøp på NorthArt ↗»-knapp
+   på verk-detaljsiden ved siden av e-post/telefon-knappene.
 
 3. `npm run build` bekrefter at skjemaet stemmer.
 4. Commit og push – Vercel deployer automatisk.

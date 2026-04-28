@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, type Lang } from "../../i18n/ui";
+import { artist } from "../../data/settings";
 
 interface Props {
   lang: Lang;
@@ -10,6 +11,9 @@ interface Props {
 const { lang } = Astro.props;
 const all = await getCollection("artworks");
 const sorted = all.sort((a, b) => a.data.order - b.data.order);
+const northart =
+  artist.social.find((s) => s.label === "NorthArt")?.url ??
+  "https://shop.northart.no";
 ---
 
 <section
@@ -39,4 +43,17 @@ const sorted = all.sort((a, b) => a.data.order - b.data.order);
       </ul>
     )
   }
+
+  <p
+    class="mt-16 sm:mt-20 pt-10 border-t border-[var(--color-border)] text-center"
+  >
+    <a
+      href={northart}
+      rel="noopener"
+      target="_blank"
+      class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+    >
+      {t(lang, "buy.northart")} ↗
+    </a>
+  </p>
 </section>
