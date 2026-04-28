@@ -13,6 +13,6 @@ description:
   no: ""
   en: ""
 available: true
-featured: false
-order: 108
+featured: true
+order: 2
 ---
