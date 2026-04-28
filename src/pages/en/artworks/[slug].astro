@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ArtworkDetail from "../../components/pages/ArtworkDetail.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ArtworkDetail from "../../../components/pages/ArtworkDetail.astro";
 
 export async function getStaticPaths() {
   const artworks = await getCollection("artworks");
@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { artwork } = Astro.props;
-const lang = "no";
+const lang = "en";
 const title = artwork.data.title[lang];
 const description = artwork.data.description[lang];
 ---

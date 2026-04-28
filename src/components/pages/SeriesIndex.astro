@@ -1,0 +1,63 @@
+---
+import { getCollection } from "astro:content";
+import { t, routes, type Lang } from "../../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const r = routes[lang];
+
+const allSeries = await getCollection("series");
+const sorted = allSeries.sort((a, b) => a.data.order - b.data.order);
+
+const allArtworks = await getCollection("artworks");
+const countBySeries = new Map<string, number>();
+for (const art of allArtworks) {
+  if (art.data.series) {
+    const id = art.data.series.id;
+    countBySeries.set(id, (countBySeries.get(id) ?? 0) + 1);
+  }
+}
+
+const worksLabel = lang === "no" ? "verk" : "works";
+---
+
+<section
+  class="max-w-[var(--container-page)] mx-auto px-6 pt-16 md:pt-20 pb-12"
+>
+  <h1 class="font-display text-4xl md:text-6xl mb-6">
+    {t(lang, "series.title")}
+  </h1>
+  <p class="max-w-[var(--container-prose)] text-lg text-[var(--color-muted)]">
+    {t(lang, "series.intro")}
+  </p>
+</section>
+
+<section class="max-w-[var(--container-page)] mx-auto px-6 pb-24">
+  <ul class="grid gap-12 md:grid-cols-2 list-none p-0">
+    {
+      sorted.map((s) => {
+        const count = countBySeries.get(s.id) ?? 0;
+        return (
+          <li>
+            <article class="space-y-3">
+              <h2 class="font-display text-2xl md:text-3xl">
+                <a href={`${r.series}/${s.id}`} class="no-underline">
+                  {s.data.title[lang]}
+                </a>
+              </h2>
+              <p class="text-[var(--color-muted)] max-w-[var(--container-prose)]">
+                {s.data.statement[lang]}
+              </p>
+              <p class="text-sm text-[var(--color-muted)]">
+                {count} {worksLabel}
+              </p>
+            </article>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>

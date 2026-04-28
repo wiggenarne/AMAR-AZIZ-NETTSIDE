@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SeriesIndex from "../../../components/pages/SeriesIndex.astro";
+import { t } from "../../../i18n/ui";
+
+const lang = "en";
+---
+
+<BaseLayout
+  title={`${t(lang, "series.title")} – Amar Aziz`}
+  description={t(lang, "series.intro")}
+  lang={lang}
+>
+  <SeriesIndex lang={lang} />
+</BaseLayout>
