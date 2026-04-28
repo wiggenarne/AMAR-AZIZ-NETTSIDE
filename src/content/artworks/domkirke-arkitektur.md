@@ -13,6 +13,6 @@ description:
   no: ". oktober."
   en: ""
 available: true
-featured: false
-order: 137
+featured: true
+order: 3
 ---
