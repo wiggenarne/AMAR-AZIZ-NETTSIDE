@@ -109,7 +109,7 @@ function isArtworkImage(src) {
   // while real artwork files are "{id}-origpic-{hash}.{ext}" or "Art. nr. {n} {title}.{ext}".
   const base = decoded.split("/").pop() || "";
   if (/logo|favicon|sprite|icon/i.test(base)) return false;
-  return /-origpic-[0-9a-f]+\.\w+$/i.test(base) || /^Art\.?\s*nr/i.test(base);
+  return /-origpic-[0-9a-f]+\.\w+$/i.test(base) || /^Art[.\s_-]*nr/i.test(base);
 }
 
 async function scrapeWork(page, url) {
@@ -127,7 +127,7 @@ async function scrapeWork(page, url) {
           } catch {
             return false;
           }
-          return /-origpic-[0-9a-f]+\.\w+$/i.test(p) || /^Art\.?\s*nr/i.test(p);
+          return /-origpic-[0-9a-f]+\.\w+$/i.test(p) || /^Art[.\s_-]*nr/i.test(p);
         });
       },
       { timeout: 30_000 },
@@ -173,7 +173,7 @@ async function scrapeWork(page, url) {
         return false;
       }
       if (/logo|favicon|sprite|icon/i.test(base)) return false;
-      return /-origpic-[0-9a-f]+\.\w+$/i.test(base) || /^Art\.?\s*nr/i.test(base);
+      return /-origpic-[0-9a-f]+\.\w+$/i.test(base) || /^Art[.\s_-]*nr/i.test(base);
     };
     const artwork = imgs
       .filter((i) => isArtwork(i.src))
@@ -284,6 +284,7 @@ async function main() {
 
   const successes = [];
   const failures = [];
+  const usedSlugs = new Set();
   let order = 100;
 
   for (const url of urls) {
@@ -314,11 +315,31 @@ async function main() {
         continue;
       }
 
-      const slug = slugify(work.title);
-      if (!slug) {
+      const baseSlug = slugify(work.title);
+      if (!baseSlug) {
         failures.push({ url, reason: "empty slug" });
         continue;
       }
+      // Disambiguate when the same title appears in multiple categories
+      // (e.g. "Blue God Dance" exists as both digital grafikk and as akryl maleri).
+      let slug = baseSlug;
+      if (usedSlugs.has(slug)) {
+        // Tag with a category-derived suffix from the URL path.
+        const cat = new URL(url).pathname.split("/").filter(Boolean)[0] || "alt";
+        const catTag = cat.includes("kunstnere")
+          ? "maleri"
+          : cat.includes("digital")
+            ? "digital"
+            : cat.includes("trykk")
+              ? "trykk"
+              : "alt";
+        slug = `${baseSlug}-${catTag}`;
+        let n = 2;
+        while (usedSlugs.has(slug)) {
+          slug = `${baseSlug}-${catTag}-${n++}`;
+        }
+      }
+      usedSlugs.add(slug);
       const ext = imageExt(work.imageUrl);
       const imgPath = join(IMG_DIR, `${slug}.${ext}`);
       const mdPath = join(MD_DIR, `${slug}.md`);
