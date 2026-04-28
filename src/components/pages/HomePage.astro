@@ -12,13 +12,17 @@ const { lang } = Astro.props;
 const r = routes[lang];
 
 const allArtworks = await getCollection("artworks");
-const featured = allArtworks
-  .filter((a) => a.data.featured)
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
+const byOrder = [...allArtworks].sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const explicitlyFeatured = byOrder.filter((a) => a.data.featured);
+// Fall back to "first by order" when nothing is explicitly marked featured.
+const featured = (explicitlyFeatured.length ? explicitlyFeatured : byOrder).slice(0, 4);
 
 const heroArtwork =
-  allArtworks.find((a) => a.id === "mountain-and-light") ?? featured[0];
+  allArtworks.find((a) => a.id === "moonlight") ??
+  explicitlyFeatured[0] ??
+  byOrder[0];
 
 const allSeries = await getCollection("series");
 const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
