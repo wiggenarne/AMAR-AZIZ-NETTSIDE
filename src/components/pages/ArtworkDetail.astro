@@ -41,7 +41,7 @@ const jsonLd = {
 ---
 
 <article
-  class="max-w-[var(--container-page)] mx-auto px-6 pt-12 pb-24 grid gap-10 lg:gap-16 lg:grid-cols-[1.4fr_1fr]"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-24 grid gap-8 sm:gap-10 lg:gap-16 lg:grid-cols-[1.4fr_1fr]"
 >
   <figure class="m-0">
     <div class="bg-[var(--color-border)] overflow-hidden">
@@ -64,7 +64,9 @@ const jsonLd = {
     </p>
 
     <header class="space-y-3">
-      <h1 class="font-display text-3xl md:text-5xl leading-tight">{title}</h1>
+      <h1 class="font-display text-[clamp(1.875rem,5vw,3rem)] leading-tight">
+        {title}
+      </h1>
       <p class="text-[var(--color-muted)] font-display italic">{data.year}</p>
     </header>
 

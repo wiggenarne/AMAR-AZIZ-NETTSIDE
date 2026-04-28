@@ -70,6 +70,8 @@ export const ui = {
     "404.body":
       "Vi finner dessverre ikke siden du leter etter. Den kan være flyttet eller tatt bort.",
     "404.cta": "Til forsiden",
+    "menu.open": "Åpne meny",
+    "menu.close": "Lukk meny",
   },
   en: {
     "nav.home": "Home",
@@ -135,6 +137,8 @@ export const ui = {
     "404.body":
       "We can't find the page you're looking for. It may have been moved or removed.",
     "404.cta": "Go to homepage",
+    "menu.open": "Open menu",
+    "menu.close": "Close menu",
   },
 } as const;
 

@@ -1,7 +1,8 @@
 export const artist = {
   name: "Amar Aziz",
   email: "amar260651@gmail.com",
-  phone: "+47",
+  phone: "+47 452 83 915",
+  phoneRaw: "+4745283915",
   address: {
     street: "Holter Terrasse 7",
     postalCode: "1448",

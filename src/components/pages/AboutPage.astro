@@ -31,23 +31,23 @@ const jsonLd = {
 ---
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 pt-16 md:pt-20 pb-12"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
-  <h1 class="font-display text-4xl md:text-6xl mb-10">
+  <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-8 sm:mb-10">
     {t(lang, "about.heading")}
   </h1>
   <div
-    class="max-w-[var(--container-prose)] space-y-5 text-lg text-[var(--color-text)]"
+    class="max-w-[var(--container-prose)] space-y-5 text-base sm:text-lg text-[var(--color-text)]"
   >
     {paragraphs.map((p) => <p>{p}</p>)}
   </div>
 </section>
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 py-16 border-t border-[var(--color-border)] grid gap-12 md:grid-cols-2"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-12 sm:py-16 border-t border-[var(--color-border)] grid gap-10 sm:gap-12 md:grid-cols-2"
 >
   <div>
-    <h2 class="font-display text-2xl mb-6">
+    <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">
       {t(lang, "about.cv.education")}
     </h2>
     <ul class="space-y-3 list-none p-0">
@@ -64,7 +64,7 @@ const jsonLd = {
     </ul>
   </div>
   <div>
-    <h2 class="font-display text-2xl mb-6">{t(lang, "about.cv.career")}</h2>
+    <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">{t(lang, "about.cv.career")}</h2>
     <ul class="space-y-3 list-none p-0 mb-12">
       {
         cvData.career.map((row) => (
@@ -78,7 +78,7 @@ const jsonLd = {
       }
     </ul>
 
-    <h2 class="font-display text-2xl mb-6">
+    <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">
       {t(lang, "about.cv.memberships")}
     </h2>
     <ul class="space-y-2 list-none p-0 text-sm">
@@ -88,18 +88,18 @@ const jsonLd = {
 </section>
 
 <section
-  class="max-w-[var(--container-page)] mx-auto px-6 py-16 border-t border-[var(--color-border)]"
+  class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-12 sm:py-16 border-t border-[var(--color-border)]"
 >
-  <p class="flex flex-wrap gap-4">
+  <p class="flex flex-wrap gap-3 sm:gap-4">
     <a
       href={r.artworks}
-      class="inline-block px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
+      class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
     >
       {t(lang, "hero.cta.primary")}
     </a>
     <a
       href={r.contact}
-      class="inline-block px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+      class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
       {t(lang, "hero.cta.secondary")}
     </a>
