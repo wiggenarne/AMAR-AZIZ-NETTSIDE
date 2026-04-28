@@ -4,6 +4,8 @@ Statisk nettside for den norsk-pakistanske kubist-maleren Amar Aziz (Drøbak).
 Bygget med [Astro](https://astro.build/) og [Tailwind CSS](https://tailwindcss.com/),
 deployet som ren statisk side på Vercel free tier.
 
+**Live:** https://amar-aziz-nettside.vercel.app
+
 ## Stack
 
 - **Astro 5** – statisk sidegenerator med innebygd i18n
@@ -28,25 +30,90 @@ Krever Node 20+.
 
 ```
 src/
-├── components/      # Header.astro, Footer.astro
-├── i18n/            # ui.ts (NO/EN-strenger og rute-mapping)
-├── layouts/         # BaseLayout.astro (head, hreflang, OG)
-├── pages/           # index.astro (forside)
-└── styles/          # global.css (designtokens, Tailwind-import)
+├── components/
+│   ├── pages/            # delte side-bodies (HomePage, GalleryPage, …)
+│   ├── ArtworkCard.astro
+│   ├── Footer.astro
+│   ├── Header.astro
+│   └── InquiryButton.astro
+├── content/
+│   ├── artworks/         # ett .md per kunstverk (NO+EN frontmatter)
+│   ├── series/           # ett .md per serie
+│   └── exhibitions/      # ett .md per utstilling
+├── data/
+│   └── settings.ts       # artist-info, bio, CV
+├── i18n/
+│   └── ui.ts             # NO/EN-strenger og rute-mapping
+├── layouts/
+│   └── BaseLayout.astro  # head, hreflang, OG, fonts
+├── pages/                # NO-ruter (default uten prefiks)
+│   └── en/               # EN-ruter under /en/
+└── styles/
+    └── global.css        # designtokens og Tailwind-import
 ```
 
-## Deploy til Vercel
+## Legge til et nytt kunstverk
 
-Repoet er klart for direkte import:
+1. Legg fotofil i `public/images/artworks/<slug>.jpg`
+   (1600×1600 px anbefalt for kvadratiske verk; mindre dimensjoner OK).
+2. Lag `src/content/artworks/<slug>.md` med dette skjelettet:
 
-1. Gå til https://vercel.com/new
-2. Velg `wiggenarne/amar-aziz-nettside`
-3. Vercel auto-detekterer Astro – bekreft med **Deploy**
-4. Etter første deploy: oppdater `site`-URL i `astro.config.mjs`
-   til den faktiske Vercel-URL-en for korrekt sitemap og hreflang.
+   ```markdown
+   ---
+   title:
+     no: "Verkets tittel"
+     en: "Work title"
+   image: "/images/artworks/<slug>.jpg"
+   width_cm: 100
+   height_cm: 100
+   medium:
+     no: "Akryl på lerret"
+     en: "Acrylic on canvas"
+   year: 2025
+   series: aluminium  # valgfritt: slug fra src/content/series/
+   description:
+     no: "Norsk beskrivelse av verket."
+     en: "English description of the work."
+   available: true
+   featured: false  # vises på forsiden hvis true
+   order: 7  # lavere tall = vises først
+   ---
+   ```
 
-## Innholdsoppdatering
+3. `npm run build` bekrefter at skjemaet stemmer.
+4. Commit og push – Vercel deployer automatisk.
 
-Per dags dato (Fase 2) er innholdet hardkodet i `src/pages/index.astro`.
-Fra Fase 3 flyttes kunstverk og serier inn i Astro Content Collections
-under `src/content/`, slik at hvert verk er en Markdown-fil med bilde.
+## Legge til en utstilling
+
+Lag `src/content/exhibitions/<slug>.md`:
+
+```markdown
+---
+title:
+  no: "Utstillingstittel"
+  en: "Exhibition title"
+venue: "Galleri X"
+city: "Oslo"
+country: "Norway"
+startDate: 2026-03-15
+endDate: 2026-04-15  # valgfritt
+type: solo  # eller group
+link: "https://galleri-x.no/utstilling"  # valgfritt
+---
+```
+
+## Endre artist-info
+
+`src/data/settings.ts` inneholder e-post, telefon, adresse, bio og CV.
+Endre der – det oppdateres på alle sider samtidig.
+
+## Deploy
+
+Vercel deployer automatisk:
+
+- Push til `main` → produksjons-deploy.
+- Hver PR → preview-deploy med egen URL i PR-kommentar.
+
+For å koble til custom domene (f.eks. `amaraziz.no`):
+Vercel-dashboard → Settings → Domains → Add domain. Oppdater
+`site`-URL i `astro.config.mjs` etterpå.
