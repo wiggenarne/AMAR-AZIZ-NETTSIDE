@@ -1,0 +1,56 @@
+---
+import { t, routes, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const r = routes[lang];
+const year = new Date().getFullYear();
+---
+
+<footer
+  class="mt-24 border-t border-[var(--color-border)] bg-[var(--color-surface)]"
+>
+  <div
+    class="max-w-[var(--container-page)] mx-auto px-6 py-14 grid gap-10 md:grid-cols-3"
+  >
+    <address class="not-italic space-y-1 text-sm">
+      <p class="font-display text-lg">Amar Aziz</p>
+      <p class="text-[var(--color-muted)]">Holter Terrasse 7, 1448 Drøbak</p>
+      <p>
+        <a href="mailto:amar260651@gmail.com">amar260651@gmail.com</a>
+      </p>
+    </address>
+
+    <nav aria-label={lang === "no" ? "Bunnmeny" : "Footer menu"}>
+      <ul class="space-y-2 text-sm">
+        <li><a href={r.artworks}>{t(lang, "nav.artworks")}</a></li>
+        <li><a href={r.series}>{t(lang, "nav.series")}</a></li>
+        <li><a href={r.about}>{t(lang, "nav.about")}</a></li>
+        <li><a href={r.exhibitions}>{t(lang, "nav.exhibitions")}</a></li>
+        <li><a href={r.contact}>{t(lang, "nav.contact")}</a></li>
+      </ul>
+    </nav>
+
+    <ul class="space-y-2 text-sm">
+      <li>
+        <a href="https://www.instagram.com/amar2606/" rel="me noopener">
+          Instagram
+        </a>
+      </li>
+      <li>
+        <a href="https://shop.northart.no" rel="noopener">NorthArt</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="border-t border-[var(--color-border)]">
+    <p
+      class="max-w-[var(--container-page)] mx-auto px-6 py-5 text-xs text-[var(--color-muted)]"
+    >
+      © {year} Amar Aziz. {t(lang, "footer.rights")}
+    </p>
+  </div>
+</footer>

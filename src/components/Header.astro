@@ -1,0 +1,58 @@
+---
+import { t, routes, type Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const r = routes[lang];
+const otherLang: Lang = lang === "no" ? "en" : "no";
+const otherHome = routes[otherLang].home;
+---
+
+<header
+  class="border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur sticky top-0 z-30"
+>
+  <div
+    class="max-w-[var(--container-page)] mx-auto px-6 py-5 flex items-center justify-between gap-6"
+  >
+    <p class="font-display text-xl tracking-tight">
+      <a href={r.home} class="no-underline hover:text-[var(--color-accent)]">
+        Amar Aziz
+      </a>
+    </p>
+
+    <nav aria-label={lang === "no" ? "Hovedmeny" : "Main menu"} class="hidden md:block">
+      <ul class="flex items-center gap-7 text-sm">
+        <li><a href={r.artworks} class="no-underline">{t(lang, "nav.artworks")}</a></li>
+        <li><a href={r.series} class="no-underline">{t(lang, "nav.series")}</a></li>
+        <li><a href={r.about} class="no-underline">{t(lang, "nav.about")}</a></li>
+        <li><a href={r.exhibitions} class="no-underline">{t(lang, "nav.exhibitions")}</a></li>
+        <li><a href={r.contact} class="no-underline">{t(lang, "nav.contact")}</a></li>
+      </ul>
+    </nav>
+
+    <p class="flex items-center gap-3 text-xs uppercase tracking-widest">
+      <a
+        href={r.home}
+        aria-current={lang === "no" ? "page" : undefined}
+        class:list={["no-underline", lang === "no" && "text-[var(--color-accent)]"]}
+        lang="no"
+        hreflang="no"
+      >
+        NO
+      </a>
+      <span aria-hidden="true" class="text-[var(--color-muted)]">/</span>
+      <a
+        href={otherHome}
+        aria-current={lang === "en" ? "page" : undefined}
+        class:list={["no-underline", lang === "en" && "text-[var(--color-accent)]"]}
+        lang="en"
+        hreflang="en"
+      >
+        EN
+      </a>
+    </p>
+  </div>
+</header>
