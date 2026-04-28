@@ -1,0 +1,156 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import InquiryButton from "../../components/InquiryButton.astro";
+import { t, routes } from "../../i18n/ui";
+
+export async function getStaticPaths() {
+  const artworks = await getCollection("artworks");
+  return artworks.map((artwork) => ({
+    params: { slug: artwork.id },
+    props: { artwork },
+  }));
+}
+
+const { artwork } = Astro.props;
+const lang = "no";
+const r = routes[lang];
+const data = artwork.data;
+const title = data.title[lang];
+const medium = data.medium[lang];
+const description = data.description[lang];
+const dim = `${data.width_cm} × ${data.height_cm} cm`;
+const altText = `${title}, ${medium}, ${data.year}, ${dim}`;
+const url = new URL(`${r.artworks}/${artwork.id}`, Astro.site).toString();
+
+let seriesData: { title: { no: string; en: string } } | null = null;
+if (data.series) {
+  const seriesEntry = await getEntry("series", data.series.id);
+  if (seriesEntry) seriesData = seriesEntry.data;
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "VisualArtwork",
+  name: title,
+  creator: { "@type": "Person", name: "Amar Aziz" },
+  artMedium: medium,
+  width: { "@type": "Distance", name: `${data.width_cm} cm` },
+  height: { "@type": "Distance", name: `${data.height_cm} cm` },
+  dateCreated: String(data.year),
+  image: new URL(data.image, Astro.site).toString(),
+  url,
+  description,
+};
+---
+
+<BaseLayout
+  title={`${title} – Amar Aziz`}
+  description={description}
+  lang={lang}
+>
+  <article
+    class="max-w-[var(--container-page)] mx-auto px-6 pt-12 pb-24 grid gap-10 lg:gap-16 lg:grid-cols-[1.4fr_1fr]"
+  >
+    <figure class="m-0">
+      <div class="bg-[var(--color-border)] overflow-hidden">
+        <img
+          src={data.image}
+          alt={altText}
+          width="1600"
+          height="1600"
+          class="w-full h-auto object-contain"
+          onerror="this.style.display='none';this.parentElement.dataset.placeholder='1'"
+        />
+      </div>
+    </figure>
+
+    <div class="space-y-8 lg:pt-4">
+      <p class="text-sm">
+        <a href={r.artworks} class="text-[var(--color-muted)]">
+          {t(lang, "detail.back")}
+        </a>
+      </p>
+
+      <header class="space-y-3">
+        <h1 class="font-display text-3xl md:text-5xl leading-tight">
+          {title}
+        </h1>
+        <p class="text-[var(--color-muted)] font-display italic">
+          {data.year}
+        </p>
+      </header>
+
+      <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
+        <dt class="text-[var(--color-muted)]">{t(lang, "detail.medium")}</dt>
+        <dd>{medium}</dd>
+
+        <dt class="text-[var(--color-muted)]">
+          {t(lang, "detail.dimensions")}
+        </dt>
+        <dd>{dim}</dd>
+
+        <dt class="text-[var(--color-muted)]">{t(lang, "detail.year")}</dt>
+        <dd>{data.year}</dd>
+
+        {
+          seriesData && (
+            <>
+              <dt class="text-[var(--color-muted)]">
+                {t(lang, "detail.series")}
+              </dt>
+              <dd>{seriesData.title[lang]}</dd>
+            </>
+          )
+        }
+
+        <dt class="text-[var(--color-muted)]">{t(lang, "detail.status")}</dt>
+        <dd
+          class:list={[
+            data.available ? "" : "text-[var(--color-accent)]",
+          ]}
+        >
+          {
+            data.available
+              ? t(lang, "detail.status.available")
+              : t(lang, "detail.status.sold")
+          }
+        </dd>
+      </dl>
+
+      <p class="text-base leading-relaxed max-w-[var(--container-prose)]">
+        {description}
+      </p>
+
+      <InquiryButton
+        lang={lang}
+        title={title}
+        year={data.year}
+        medium={medium}
+        dimensions={dim}
+        url={url}
+        available={data.available}
+      />
+    </div>
+  </article>
+
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd)}
+    is:inline
+  />
+
+  <style>
+    div[data-placeholder="1"] {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1 / 1;
+    }
+    div[data-placeholder="1"]::after {
+      content: "—";
+      color: var(--color-muted);
+      font-family: var(--font-display);
+      font-size: 4rem;
+    }
+  </style>
+</BaseLayout>
