@@ -66,6 +66,10 @@ export const ui = {
     "contact.social": "Følg Amar",
     "contact.email.label": "E-post",
     "contact.phone.label": "Telefon",
+    "404.title": "Siden finnes ikke",
+    "404.body":
+      "Vi finner dessverre ikke siden du leter etter. Den kan være flyttet eller tatt bort.",
+    "404.cta": "Til forsiden",
   },
   en: {
     "nav.home": "Home",
@@ -127,6 +131,10 @@ export const ui = {
     "contact.social": "Follow Amar",
     "contact.email.label": "Email",
     "contact.phone.label": "Phone",
+    "404.title": "Page not found",
+    "404.body":
+      "We can't find the page you're looking for. It may have been moved or removed.",
+    "404.cta": "Go to homepage",
   },
 } as const;
 
