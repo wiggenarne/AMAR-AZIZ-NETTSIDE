@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import GalleryPage from "../../../components/pages/GalleryPage.astro";
+import { t } from "../../../i18n/ui";
+
+const lang = "en";
+---
+
+<BaseLayout
+  title={`${t(lang, "gallery.title")} – Amar Aziz`}
+  description={t(lang, "gallery.intro")}
+  lang={lang}
+>
+  <GalleryPage lang={lang} />
+</BaseLayout>

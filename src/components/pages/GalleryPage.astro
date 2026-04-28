@@ -1,0 +1,40 @@
+---
+import { getCollection } from "astro:content";
+import ArtworkCard from "../ArtworkCard.astro";
+import { t, type Lang } from "../../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const all = await getCollection("artworks");
+const sorted = all.sort((a, b) => a.data.order - b.data.order);
+---
+
+<section
+  class="max-w-[var(--container-page)] mx-auto px-6 pt-16 md:pt-20 pb-12"
+>
+  <h1 class="font-display text-4xl md:text-6xl mb-6">
+    {t(lang, "gallery.title")}
+  </h1>
+  <p class="max-w-[var(--container-prose)] text-lg text-[var(--color-muted)]">
+    {t(lang, "gallery.intro")}
+  </p>
+</section>
+
+<section class="max-w-[var(--container-page)] mx-auto px-6 pb-24">
+  {
+    sorted.length === 0 ? (
+      <p class="text-[var(--color-muted)]">{t(lang, "gallery.empty")}</p>
+    ) : (
+      <ul class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
+        {sorted.map((artwork) => (
+          <li>
+            <ArtworkCard artwork={artwork} lang={lang} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>
