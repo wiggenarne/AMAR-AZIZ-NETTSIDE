@@ -168,3 +168,52 @@ export const routes = {
     contact: "/en/contact",
   },
 } as const;
+
+const segmentMap = {
+  no: {
+    kunstverk: "artworks",
+    serier: "series",
+    om: "about",
+    utstillinger: "exhibitions",
+    kontakt: "contact",
+  },
+  en: {
+    artworks: "kunstverk",
+    series: "serier",
+    about: "om",
+    exhibitions: "utstillinger",
+    contact: "kontakt",
+  },
+} as const;
+
+/**
+ * Returnerer den tilsvarende URL-en på `targetLang` for den nåværende
+ * `pathname`-en. Brukes av locale-switcheren slik at man holder seg
+ * på samme side når språk byttes (f.eks. /kunstverk/mountain-and-light
+ * ↔ /en/artworks/mountain-and-light).
+ */
+export function localizedPath(
+  pathname: string,
+  currentLang: Lang,
+  targetLang: Lang,
+): string {
+  if (currentLang === targetLang) return pathname;
+
+  const parts = pathname.split("/").filter(Boolean);
+
+  if (currentLang === "no" && targetLang === "en") {
+    if (parts.length === 0) return routes.en.home;
+    const [first, ...rest] = parts;
+    const mapped = (segmentMap.no as Record<string, string>)[first];
+    if (!mapped) return routes.en.home;
+    return `/en/${mapped}${rest.length ? "/" + rest.join("/") : ""}`;
+  }
+
+  // currentLang === "en" && targetLang === "no"
+  if (parts[0] !== "en" || parts.length === 0) return routes.no.home;
+  if (parts.length === 1) return routes.no.home;
+  const [, second, ...rest] = parts;
+  const mapped = (segmentMap.en as Record<string, string>)[second];
+  if (!mapped) return routes.no.home;
+  return `/${mapped}${rest.length ? "/" + rest.join("/") : ""}`;
+}

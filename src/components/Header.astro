@@ -1,5 +1,5 @@
 ---
-import { t, routes, type Lang } from "../i18n/ui";
+import { t, routes, localizedPath, type Lang } from "../i18n/ui";
 
 interface Props {
   lang: Lang;
@@ -7,8 +7,9 @@ interface Props {
 
 const { lang } = Astro.props;
 const r = routes[lang];
-const otherLang: Lang = lang === "no" ? "en" : "no";
-const otherHome = routes[otherLang].home;
+const pathname = Astro.url.pathname;
+const noUrl = localizedPath(pathname, lang, "no");
+const enUrl = localizedPath(pathname, lang, "en");
 ---
 
 <header
@@ -42,7 +43,7 @@ const otherHome = routes[otherLang].home;
     <div class="flex items-center gap-3 sm:gap-4">
       <p class="flex items-center gap-2 text-xs uppercase tracking-widest">
         <a
-          href={r.home}
+          href={noUrl}
           aria-current={lang === "no" ? "page" : undefined}
           class:list={[
             "no-underline px-2 py-2",
@@ -55,7 +56,7 @@ const otherHome = routes[otherLang].home;
         </a>
         <span aria-hidden="true" class="text-[var(--color-muted)]">/</span>
         <a
-          href={otherHome}
+          href={enUrl}
           aria-current={lang === "en" ? "page" : undefined}
           class:list={[
             "no-underline px-2 py-2",
