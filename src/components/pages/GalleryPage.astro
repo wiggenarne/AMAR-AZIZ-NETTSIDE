@@ -30,13 +30,26 @@ const sorted = all.sort((a, b) => a.data.order - b.data.order);
     sorted.length === 0 ? (
       <p class="text-[var(--color-muted)]">{t(lang, "gallery.empty")}</p>
     ) : (
-      <ul class="grid gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-12 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
-        {sorted.map((artwork) => (
-          <li>
-            <ArtworkCard artwork={artwork} lang={lang} />
-          </li>
-        ))}
-      </ul>
+      <>
+        <ul class="grid gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-12 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
+          {sorted.map((artwork) => (
+            <li>
+              <ArtworkCard artwork={artwork} lang={lang} />
+            </li>
+          ))}
+        </ul>
+
+        {sorted.length > 9 && (
+          <p class="mt-16 sm:mt-20 text-center">
+            <a
+              href="#"
+              class="inline-flex items-center justify-center min-h-12 px-6 py-3 text-sm text-[var(--color-muted)] no-underline hover:text-[var(--color-accent)] transition-colors"
+            >
+              {t(lang, "back.toTop")}
+            </a>
+          </p>
+        )}
+      </>
     )
   }
 </section>

@@ -72,6 +72,7 @@ export const ui = {
     "404.cta": "Til forsiden",
     "menu.open": "Åpne meny",
     "menu.close": "Lukk meny",
+    "back.toTop": "Til toppen ↑",
   },
   en: {
     "nav.home": "Home",
@@ -139,6 +140,7 @@ export const ui = {
     "404.cta": "Go to homepage",
     "menu.open": "Open menu",
     "menu.close": "Close menu",
+    "back.toTop": "Back to top ↑",
   },
 } as const;
 
