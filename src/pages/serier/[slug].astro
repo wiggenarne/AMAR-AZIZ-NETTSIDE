@@ -1,20 +1,21 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SeriesDetail from "../../components/pages/SeriesDetail.astro";
+import { getAllSeries } from "../../lib/queries";
+import { pickLocale } from "../../lib/sanity";
 
 export async function getStaticPaths() {
-  const series = await getCollection("series");
+  const series = await getAllSeries();
   return series.map((s) => ({
-    params: { slug: s.id },
+    params: { slug: s.slug },
     props: { series: s },
   }));
 }
 
 const { series } = Astro.props;
 const lang = "no";
-const title = series.data.title[lang];
-const description = series.data.statement[lang];
+const title = pickLocale(series.title, lang);
+const description = pickLocale(series.statement, lang);
 ---
 
 <BaseLayout

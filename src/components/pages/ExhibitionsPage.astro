@@ -1,6 +1,7 @@
 ---
-import { getCollection } from "astro:content";
 import { t, type Lang } from "../../i18n/ui";
+import { pickLocale } from "../../lib/sanity";
+import { getAllExhibitions } from "../../lib/queries";
 
 interface Props {
   lang: Lang;
@@ -8,15 +9,20 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const all = await getCollection("exhibitions");
-const sorted = all.sort(
-  (a, b) => b.data.startDate.getTime() - a.data.startDate.getTime(),
-);
+const raw = await getAllExhibitions();
+const sorted = raw
+  .map((ex) => ({
+    ...ex,
+    startDateObj: new Date(ex.startDate),
+    endDateObj: ex.endDate ? new Date(ex.endDate) : undefined,
+  }))
+  .sort((a, b) => b.startDateObj.getTime() - a.startDateObj.getTime());
 
-type Group = { year: number; items: typeof sorted };
+type Item = (typeof sorted)[number];
+type Group = { year: number; items: Item[] };
 const grouped: Group[] = [];
 for (const ex of sorted) {
-  const year = ex.data.startDate.getFullYear();
+  const year = ex.startDateObj.getFullYear();
   let g = grouped.find((x) => x.year === year);
   if (!g) {
     g = { year, items: [] };
@@ -61,25 +67,25 @@ const fmt = (d: Date) =>
               <li>
                 <article class="grid gap-1 md:grid-cols-[12rem_1fr] md:gap-8">
                   <p class="text-sm text-[var(--color-muted)] tabular-nums">
-                    {fmt(ex.data.startDate)}
-                    {ex.data.endDate ? ` – ${fmt(ex.data.endDate)}` : ""}
+                    {fmt(ex.startDateObj)}
+                    {ex.endDateObj ? ` – ${fmt(ex.endDateObj)}` : ""}
                   </p>
                   <div>
                     <h3 class="font-display text-xl mb-1">
-                      {ex.data.link ? (
-                        <a href={ex.data.link} rel="noopener" target="_blank">
-                          {ex.data.title[lang]}
+                      {ex.link ? (
+                        <a href={ex.link} rel="noopener" target="_blank">
+                          {pickLocale(ex.title, lang)}
                         </a>
                       ) : (
-                        ex.data.title[lang]
+                        pickLocale(ex.title, lang)
                       )}
                     </h3>
                     <p class="text-sm text-[var(--color-muted)]">
-                      {ex.data.venue}, {ex.data.city}
+                      {ex.venue}, {ex.city}
                       {" · "}
                       {t(
                         lang,
-                        ex.data.type === "solo"
+                        ex.type === "solo"
                           ? "exhibitions.solo"
                           : "exhibitions.group",
                       )}

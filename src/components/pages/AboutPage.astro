@@ -1,6 +1,6 @@
 ---
 import { t, routes, type Lang } from "../../i18n/ui";
-import { artist, bio, cv } from "../../data/settings";
+import { getSiteSettings } from "../../lib/queries";
 
 interface Props {
   lang: Lang;
@@ -8,25 +8,26 @@ interface Props {
 
 const { lang } = Astro.props;
 const r = routes[lang];
-const paragraphs = bio[lang];
-const cvData = cv[lang];
+const settings = await getSiteSettings();
+const paragraphs = settings.bio[lang];
+const cvData = settings.cv[lang];
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: artist.name,
-  birthPlace: artist.birthplace,
-  birthDate: String(artist.born),
-  email: artist.email,
+  name: settings.name,
+  birthPlace: settings.birthplace,
+  birthDate: String(settings.born),
+  email: settings.email,
   address: {
     "@type": "PostalAddress",
-    streetAddress: artist.address.street,
-    postalCode: artist.address.postalCode,
-    addressLocality: artist.address.city,
+    streetAddress: settings.address.street,
+    postalCode: settings.address.postalCode,
+    addressLocality: settings.address.city,
     addressCountry: "NO",
   },
   jobTitle: lang === "no" ? "Billedkunstner" : "Visual artist",
-  sameAs: artist.social.map((s) => s.url),
+  sameAs: settings.social.map((s) => s.url),
 };
 ---
 

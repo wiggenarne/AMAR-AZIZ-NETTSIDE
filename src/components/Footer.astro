@@ -1,5 +1,6 @@
 ---
 import { t, routes, type Lang } from "../i18n/ui";
+import { getSiteSettings } from "../lib/queries";
 
 interface Props {
   lang: Lang;
@@ -8,6 +9,7 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 const year = new Date().getFullYear();
+const settings = await getSiteSettings();
 ---
 
 <footer
@@ -17,10 +19,12 @@ const year = new Date().getFullYear();
     class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-10 sm:py-14 grid gap-8 sm:gap-10 sm:grid-cols-2 lg:grid-cols-3"
   >
     <address class="not-italic space-y-1 text-sm">
-      <p class="font-display text-lg">Amar Aziz</p>
-      <p class="text-[var(--color-muted)]">Holter Terrasse 7, 1448 Drøbak</p>
+      <p class="font-display text-lg">{settings.name}</p>
+      <p class="text-[var(--color-muted)]">
+        {settings.address.street}, {settings.address.postalCode} {settings.address.city}
+      </p>
       <p>
-        <a href="mailto:amar260651@gmail.com">amar260651@gmail.com</a>
+        <a href={`mailto:${settings.email}`}>{settings.email}</a>
       </p>
     </address>
 
@@ -35,14 +39,15 @@ const year = new Date().getFullYear();
     </nav>
 
     <ul class="space-y-2 text-sm sm:col-span-2 lg:col-span-1">
-      <li>
-        <a href="https://www.instagram.com/amar2606/" rel="me noopener">
-          Instagram
-        </a>
-      </li>
-      <li>
-        <a href="https://shop.northart.no" rel="noopener">NorthArt</a>
-      </li>
+      {
+        settings.social.map((s) => (
+          <li>
+            <a href={s.url} rel="me noopener">
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </div>
 
@@ -50,7 +55,7 @@ const year = new Date().getFullYear();
     <p
       class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-5 text-xs text-[var(--color-muted)]"
     >
-      © {year} Amar Aziz. {t(lang, "footer.rights")}
+      © {year} {settings.name}. {t(lang, "footer.rights")}
     </p>
   </div>
 </footer>
