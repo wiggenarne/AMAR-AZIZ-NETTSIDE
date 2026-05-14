@@ -1,24 +1,19 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
+import { pickLocale, type Series } from "../../lib/sanity";
+import { getArtworksBySeriesId } from "../../lib/queries";
 
 interface Props {
-  series: CollectionEntry<"series">;
+  series: Series;
   lang: Lang;
 }
 
 const { series, lang } = Astro.props;
 const r = routes[lang];
-const data = series.data;
-const title = data.title[lang];
-const statement = data.statement[lang];
-
-const allArtworks = await getCollection("artworks");
-const works = allArtworks
-  .filter((a) => a.data.series?.id === series.id)
-  .sort((a, b) => a.data.order - b.data.order);
+const title = pickLocale(series.title, lang);
+const statement = pickLocale(series.statement, lang);
+const works = await getArtworksBySeriesId(series._id);
 ---
 
 <section

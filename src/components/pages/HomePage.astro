@@ -1,8 +1,13 @@
 ---
-import { getCollection } from "astro:content";
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
-import { artist } from "../../data/settings";
+import { pickLocale } from "../../lib/sanity";
+import { urlForImage } from "../../lib/urlForImage";
+import {
+  getAllArtworks,
+  getAllSeries,
+  getSiteSettings,
+} from "../../lib/queries";
 
 interface Props {
   lang: Lang;
@@ -11,21 +16,22 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 
-const allArtworks = await getCollection("artworks");
-const byOrder = [...allArtworks].sort(
-  (a, b) => a.data.order - b.data.order,
-);
-const explicitlyFeatured = byOrder.filter((a) => a.data.featured);
-// Fall back to "first by order" when nothing is explicitly marked featured.
-const featured = (explicitlyFeatured.length ? explicitlyFeatured : byOrder).slice(0, 4);
+const [allArtworks, sortedSeries, settings] = await Promise.all([
+  getAllArtworks(),
+  getAllSeries(),
+  getSiteSettings(),
+]);
+
+const explicitlyFeatured = allArtworks.filter((a) => a.featured);
+const featured = (explicitlyFeatured.length ? explicitlyFeatured : allArtworks).slice(0, 4);
 
 const heroArtwork =
-  allArtworks.find((a) => a.id === "moonlight") ??
+  allArtworks.find((a) => a.slug === "moonlight") ??
   explicitlyFeatured[0] ??
-  byOrder[0];
+  allArtworks[0];
 
-const allSeries = await getCollection("series");
-const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
+const heroImg = heroArtwork ? urlForImage(heroArtwork.image) : null;
+const heroSrc = heroImg ? heroImg.width(1600).height(1600).url() : "";
 ---
 
 <section
@@ -50,16 +56,16 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
   </p>
 
   {
-    heroArtwork && (
+    heroArtwork && heroSrc && (
       <figure class="mb-10">
         <a
-          href={`${r.artworks}/${heroArtwork.id}`}
+          href={`${r.artworks}/${heroArtwork.slug}`}
           class="block no-underline group"
         >
           <div class="aspect-square w-full bg-[var(--color-border)] overflow-hidden">
             <img
-              src={heroArtwork.data.image}
-              alt={`${heroArtwork.data.title[lang]}, ${heroArtwork.data.medium[lang]}, ${heroArtwork.data.year}`}
+              src={heroSrc}
+              alt={`${pickLocale(heroArtwork.title, lang)}, ${pickLocale(heroArtwork.medium, lang)}, ${heroArtwork.year}`}
               width="1600"
               height="1600"
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.01]"
@@ -70,7 +76,7 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
           </div>
         </a>
         <figcaption class="mt-3 text-sm text-[var(--color-muted)] font-display italic">
-          {heroArtwork.data.title[lang]}, {heroArtwork.data.year} – {heroArtwork.data.medium[lang]}, {heroArtwork.data.width_cm} × {heroArtwork.data.height_cm} cm
+          {pickLocale(heroArtwork.title, lang)}, {heroArtwork.year} – {pickLocale(heroArtwork.medium, lang)}, {heroArtwork.width_cm} × {heroArtwork.height_cm} cm
         </figcaption>
       </figure>
     )
@@ -122,11 +128,11 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
         <li>
           <article class="space-y-2">
             <h3 class="font-display text-xl">
-              <a href={`${r.series}/${s.id}`} class="no-underline">
-                {s.data.title[lang]}
+              <a href={`${r.series}/${s.slug}`} class="no-underline">
+                {pickLocale(s.title, lang)}
               </a>
             </h3>
-            <p class="text-[var(--color-muted)]">{s.data.statement[lang]}</p>
+            <p class="text-[var(--color-muted)]">{pickLocale(s.statement, lang)}</p>
           </article>
         </li>
       ))
@@ -171,7 +177,7 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
   </p>
   <p class="flex flex-wrap gap-4">
     <a
-      href={`mailto:${artist.email}?subject=${encodeURIComponent(
+      href={`mailto:${settings.email}?subject=${encodeURIComponent(
         lang === "no" ? "Forespørsel om kunstverk" : "Artwork inquiry",
       )}`}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
@@ -179,7 +185,7 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
       {t(lang, "contact.email")}
     </a>
     <a
-      href={`tel:${artist.phoneRaw}`}
+      href={`tel:${settings.phoneRaw}`}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
       {t(lang, "contact.phone")}

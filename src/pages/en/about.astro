@@ -2,14 +2,15 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AboutPage from "../../components/pages/AboutPage.astro";
 import { t } from "../../i18n/ui";
-import { artist, bio } from "../../data/settings";
+import { getSiteSettings } from "../../lib/queries";
 
 const lang = "en";
+const settings = await getSiteSettings();
 ---
 
 <BaseLayout
-  title={`${t(lang, "about.heading")} – ${artist.name}`}
-  description={bio[lang][0]}
+  title={`${t(lang, "about.heading")} – ${settings.name}`}
+  description={settings.bio[lang][0]}
   lang={lang}
 >
   <AboutPage lang={lang} />

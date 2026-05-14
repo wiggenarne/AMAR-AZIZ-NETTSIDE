@@ -1,6 +1,5 @@
 ---
 import { type Lang } from "../i18n/ui";
-import { artist } from "../data/settings";
 
 interface Props {
   lang: Lang;
@@ -10,9 +9,12 @@ interface Props {
   dimensions: string;
   url: string;
   available: boolean;
+  email: string;
+  phoneRaw: string;
 }
 
-const { lang, title, year, medium, dimensions, url, available } = Astro.props;
+const { lang, title, year, medium, dimensions, url, available, email, phoneRaw } =
+  Astro.props;
 
 const labels = {
   no: {
@@ -37,7 +39,7 @@ const body =
     ? `Hei Amar,\n\nJeg er interessert i verket «${title}» (${medium}, ${dimensions}, ${year}).\nLenke: ${url}\n\nVennlig hilsen,\n`
     : `Hello Amar,\n\nI'm interested in the work "${title}" (${medium}, ${dimensions}, ${year}).\nLink: ${url}\n\nKind regards,\n`;
 
-const mailto = `mailto:amar260651@gmail.com?subject=${encodeURIComponent(
+const mailto = `mailto:${email}?subject=${encodeURIComponent(
   subject,
 )}&body=${encodeURIComponent(body)}`;
 
@@ -52,7 +54,7 @@ const primaryLabel = available ? labels[lang].inquire : labels[lang].sold;
     {primaryLabel}
   </a>
   <a
-    href={`tel:${artist.phoneRaw}`}
+    href={`tel:${phoneRaw}`}
     class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
   >
     {labels[lang].call}

@@ -1,29 +1,32 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { getEntry } from "astro:content";
 import InquiryButton from "../InquiryButton.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
+import { pickLocale, type Artwork } from "../../lib/sanity";
+import { urlForImage } from "../../lib/urlForImage";
+import { getSiteSettings } from "../../lib/queries";
 
 interface Props {
-  artwork: CollectionEntry<"artworks">;
+  artwork: Artwork;
   lang: Lang;
 }
 
 const { artwork, lang } = Astro.props;
 const r = routes[lang];
-const data = artwork.data;
-const title = data.title[lang];
-const medium = data.medium[lang];
-const description = data.description[lang];
-const dim = `${data.width_cm} × ${data.height_cm} cm`;
-const altText = `${title}, ${medium}, ${data.year}, ${dim}`;
-const url = new URL(`${r.artworks}/${artwork.id}`, Astro.site).toString();
+const settings = await getSiteSettings();
+const title = pickLocale(artwork.title, lang);
+const medium = pickLocale(artwork.medium, lang);
+const description = pickLocale(artwork.description, lang);
+const dim = `${artwork.width_cm} × ${artwork.height_cm} cm`;
+const altText = `${title}, ${medium}, ${artwork.year}, ${dim}`;
+const url = new URL(`${r.artworks}/${artwork.slug}`, Astro.site).toString();
 
-let seriesData: { title: { no: string; en: string } } | null = null;
-if (data.series) {
-  const seriesEntry = await getEntry("series", data.series.id);
-  if (seriesEntry) seriesData = seriesEntry.data;
-}
+const seriesData = artwork.series ?? null;
+
+const imgBuilder = urlForImage(artwork.image);
+const detailSrc = imgBuilder ? imgBuilder.width(1600).url() : "";
+const detailSrcset = imgBuilder
+  ? `${imgBuilder.width(800).url()} 800w, ${imgBuilder.width(1200).url()} 1200w, ${imgBuilder.width(1600).url()} 1600w, ${imgBuilder.width(2000).url()} 2000w`
+  : "";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -31,10 +34,10 @@ const jsonLd = {
   name: title,
   creator: { "@type": "Person", name: "Amar Aziz" },
   artMedium: medium,
-  width: { "@type": "Distance", name: `${data.width_cm} cm` },
-  height: { "@type": "Distance", name: `${data.height_cm} cm` },
-  dateCreated: String(data.year),
-  image: new URL(data.image, Astro.site).toString(),
+  width: { "@type": "Distance", name: `${artwork.width_cm} cm` },
+  height: { "@type": "Distance", name: `${artwork.height_cm} cm` },
+  dateCreated: String(artwork.year),
+  image: detailSrc,
   url,
   description,
 };
@@ -45,14 +48,18 @@ const jsonLd = {
 >
   <figure class="m-0">
     <div class="bg-[var(--color-border)] overflow-hidden">
-      <img
-        src={data.image}
-        alt={altText}
-        width="1600"
-        height="1600"
-        class="w-full h-auto object-contain"
-        onerror="this.style.display='none';this.parentElement.dataset.placeholder='1'"
-      />
+      {detailSrc && (
+        <img
+          src={detailSrc}
+          srcset={detailSrcset}
+          sizes="(min-width: 1024px) 60vw, 100vw"
+          alt={altText}
+          width="1600"
+          height="1600"
+          class="w-full h-auto object-contain"
+          onerror="this.style.display='none';this.parentElement.dataset.placeholder='1'"
+        />
+      )}
     </div>
   </figure>
 
@@ -67,7 +74,7 @@ const jsonLd = {
       <h1 class="font-display text-[clamp(1.875rem,5vw,3rem)] leading-tight">
         {title}
       </h1>
-      <p class="text-[var(--color-muted)] font-display italic">{data.year}</p>
+      <p class="text-[var(--color-muted)] font-display italic">{artwork.year}</p>
     </header>
 
     <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
@@ -78,7 +85,7 @@ const jsonLd = {
       <dd>{dim}</dd>
 
       <dt class="text-[var(--color-muted)]">{t(lang, "detail.year")}</dt>
-      <dd>{data.year}</dd>
+      <dd>{artwork.year}</dd>
 
       {
         seriesData && (
@@ -86,15 +93,15 @@ const jsonLd = {
             <dt class="text-[var(--color-muted)]">
               {t(lang, "detail.series")}
             </dt>
-            <dd>{seriesData.title[lang]}</dd>
+            <dd>{pickLocale(seriesData.title, lang)}</dd>
           </>
         )
       }
 
       <dt class="text-[var(--color-muted)]">{t(lang, "detail.status")}</dt>
-      <dd class:list={[data.available ? "" : "text-[var(--color-accent)]"]}>
+      <dd class:list={[artwork.available ? "" : "text-[var(--color-accent)]"]}>
         {
-          data.available
+          artwork.available
             ? t(lang, "detail.status.available")
             : t(lang, "detail.status.sold")
         }
@@ -108,11 +115,13 @@ const jsonLd = {
     <InquiryButton
       lang={lang}
       title={title}
-      year={data.year}
+      year={artwork.year}
       medium={medium}
       dimensions={dim}
       url={url}
-      available={data.available}
+      available={artwork.available}
+      email={settings.email}
+      phoneRaw={settings.phoneRaw}
     />
   </div>
 </article>

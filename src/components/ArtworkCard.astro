@@ -1,47 +1,56 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import { type Lang, routes } from "../i18n/ui";
+import { pickLocale, type Artwork } from "../lib/sanity";
+import { urlForImage } from "../lib/urlForImage";
 
 interface Props {
-  artwork: CollectionEntry<"artworks">;
+  artwork: Artwork;
   lang: Lang;
 }
 
 const { artwork, lang } = Astro.props;
 const r = routes[lang];
-const data = artwork.data;
-const title = data.title[lang];
-const medium = data.medium[lang];
-const dim = `${data.width_cm} × ${data.height_cm} cm`;
-const altText = `${title}, ${medium}, ${data.year}, ${dim}`;
+const title = pickLocale(artwork.title, lang);
+const medium = pickLocale(artwork.medium, lang);
+const dim = `${artwork.width_cm} × ${artwork.height_cm} cm`;
+const altText = `${title}, ${medium}, ${artwork.year}, ${dim}`;
+const imgBuilder = urlForImage(artwork.image);
+const src = imgBuilder ? imgBuilder.width(800).height(800).url() : "";
+const srcset = imgBuilder
+  ? `${imgBuilder.width(400).height(400).url()} 400w, ${imgBuilder.width(800).height(800).url()} 800w, ${imgBuilder.width(1200).height(1200).url()} 1200w`
+  : "";
 ---
 
 <article>
   <a
-    href={`${r.artworks}/${artwork.id}`}
+    href={`${r.artworks}/${artwork.slug}`}
     class="block no-underline group"
     aria-label={altText}
   >
     <figure class="m-0">
       <div class="aspect-square w-full overflow-hidden bg-[var(--color-border)]">
-        <img
-          src={data.image}
-          alt={altText}
-          loading="lazy"
-          decoding="async"
-          width="800"
-          height="800"
-          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          onerror="this.style.display='none';this.parentElement.dataset.placeholder='1'"
-        />
+        {src && (
+          <img
+            src={src}
+            srcset={srcset}
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            alt={altText}
+            loading="lazy"
+            decoding="async"
+            width="800"
+            height="800"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            onerror="this.style.display='none';this.parentElement.dataset.placeholder='1'"
+          />
+        )}
       </div>
       <figcaption class="mt-3 space-y-1">
         <h3 class="font-display text-base leading-tight">{title}</h3>
         <p class="text-sm text-[var(--color-muted)]">
-          {medium} · {data.year} · {dim}
+          {medium} · {artwork.year} · {dim}
         </p>
         {
-          !data.available && (
+          !artwork.available && (
             <p class="text-xs uppercase tracking-widest text-[var(--color-accent)]">
               {lang === "no" ? "Solgt" : "Sold"}
             </p>

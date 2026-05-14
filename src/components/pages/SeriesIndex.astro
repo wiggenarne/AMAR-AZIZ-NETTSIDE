@@ -1,6 +1,7 @@
 ---
-import { getCollection } from "astro:content";
 import { t, routes, type Lang } from "../../i18n/ui";
+import { pickLocale } from "../../lib/sanity";
+import { getAllSeries, getSeriesCounts } from "../../lib/queries";
 
 interface Props {
   lang: Lang;
@@ -9,18 +10,7 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 
-const allSeries = await getCollection("series");
-const sorted = allSeries.sort((a, b) => a.data.order - b.data.order);
-
-const allArtworks = await getCollection("artworks");
-const countBySeries = new Map<string, number>();
-for (const art of allArtworks) {
-  if (art.data.series) {
-    const id = art.data.series.id;
-    countBySeries.set(id, (countBySeries.get(id) ?? 0) + 1);
-  }
-}
-
+const [sorted, counts] = await Promise.all([getAllSeries(), getSeriesCounts()]);
 const worksLabel = lang === "no" ? "verk" : "works";
 ---
 
@@ -41,17 +31,17 @@ const worksLabel = lang === "no" ? "verk" : "works";
   <ul class="grid gap-10 sm:gap-12 md:grid-cols-2 list-none p-0">
     {
       sorted.map((s) => {
-        const count = countBySeries.get(s.id) ?? 0;
+        const count = counts[s._id] ?? 0;
         return (
           <li>
             <article class="space-y-3">
               <h2 class="font-display text-xl sm:text-2xl md:text-3xl">
-                <a href={`${r.series}/${s.id}`} class="no-underline">
-                  {s.data.title[lang]}
+                <a href={`${r.series}/${s.slug}`} class="no-underline">
+                  {pickLocale(s.title, lang)}
                 </a>
               </h2>
               <p class="text-[var(--color-muted)] max-w-[var(--container-prose)]">
-                {s.data.statement[lang]}
+                {pickLocale(s.statement, lang)}
               </p>
               <p class="text-sm text-[var(--color-muted)]">
                 {count} {worksLabel}
