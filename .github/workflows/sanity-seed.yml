@@ -1,0 +1,66 @@
+name: Sanity seed (sidetekst)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch å hente kode fra"
+        required: true
+        default: "claude/editable-text-content"
+        type: string
+      mode:
+        description: "Hva skal skje?"
+        required: true
+        default: "dry-run"
+        type: choice
+        options:
+          - dry-run
+          - create-if-missing
+          - force-overwrite
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hent ut koden
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Sett opp Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Installer dependencies
+        run: npm ci
+
+      - name: Kjør seed
+        env:
+          PUBLIC_SANITY_PROJECT_ID: "4tuzsh1b"
+          PUBLIC_SANITY_DATASET: "production"
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: |
+          case "${{ inputs.mode }}" in
+            "force-overwrite")
+              node scripts/seed-site-content.js --force
+              ;;
+            "create-if-missing")
+              node scripts/seed-site-content.js
+              ;;
+            *)
+              node scripts/seed-site-content.js --dry-run
+              ;;
+          esac
+
+      - name: Oppsummering
+        if: success()
+        run: |
+          echo "## Seed ferdig" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: **${{ inputs.branch }}**" >> $GITHUB_STEP_SUMMARY
+          echo "Modus: **${{ inputs.mode }}**" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.mode }}" = "create-if-missing" ] || [ "${{ inputs.mode }}" = "force-overwrite" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Sidetekst-dokumentene 'Tekst på nettsiden' og 'Kunstner-info' er nå tilgjengelige i Studio." >> $GITHUB_STEP_SUMMARY
+          fi

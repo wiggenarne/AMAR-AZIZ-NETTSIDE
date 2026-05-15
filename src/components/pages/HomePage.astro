@@ -1,8 +1,12 @@
 ---
 import ArtworkCard from "../ArtworkCard.astro";
-import { t, routes, type Lang } from "../../i18n/ui";
-import { artist } from "../../data/settings";
-import { getArtworks, getSeries } from "../../sanity/content";
+import { routes, type Lang } from "../../i18n/ui";
+import {
+  getArtworks,
+  getSeries,
+  getSiteContent,
+  getArtistInfo,
+} from "../../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -11,7 +15,13 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 
-const allArtworks = await getArtworks();
+const [allArtworks, allSeries, site, artist] = await Promise.all([
+  getArtworks(),
+  getSeries(),
+  getSiteContent(),
+  getArtistInfo(),
+]);
+
 const byOrder = [...allArtworks].sort(
   (a, b) => a.data.order - b.data.order,
 );
@@ -23,8 +33,9 @@ const heroArtwork =
   explicitlyFeatured[0] ??
   byOrder[0];
 
-const allSeries = await getSeries();
 const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
+
+const subject = lang === "no" ? "Forespørsel om kunstverk" : "Artwork inquiry";
 ---
 
 <section
@@ -34,18 +45,18 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
   <p
     class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)] mb-4 sm:mb-6"
   >
-    {t(lang, "hero.eyebrow")}
+    {site.heroEyebrow[lang]}
   </p>
   <h1
     id="hero-tittel"
     class="font-display text-[clamp(2.75rem,10vw,8rem)] leading-[0.95] tracking-tight mb-6 sm:mb-8"
   >
-    Amar Aziz
+    {artist.name}
   </h1>
   <p
     class="max-w-[var(--container-prose)] text-base sm:text-lg md:text-xl text-[var(--color-muted)] mb-8 sm:mb-10"
   >
-    {t(lang, "hero.lede")}
+    {site.heroLede[lang]}
   </p>
 
   {
@@ -80,13 +91,13 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
       href={r.artworks}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "hero.cta.primary")}
+      {site.heroCtaPrimary[lang]}
     </a>
     <a
       href={r.contact}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "hero.cta.secondary")}
+      {site.heroCtaSecondary[lang]}
     </a>
   </p>
 </section>
@@ -96,15 +107,15 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-14 sm:py-20 border-t border-[var(--color-border)]"
 >
   <h2 id="om-tittel" class="font-display text-2xl sm:text-3xl md:text-4xl mb-5 sm:mb-6">
-    {t(lang, "about.title")}
+    {site.homeAboutTitle[lang]}
   </h2>
   <p
     class="max-w-[var(--container-prose)] text-lg text-[var(--color-muted)] mb-6"
   >
-    {t(lang, "about.body")}
+    {site.homeAboutBody[lang]}
   </p>
   <p>
-    <a href={r.about}>{t(lang, "about.more")} →</a>
+    <a href={r.about}>{site.homeAboutMore[lang]} →</a>
   </p>
 </section>
 
@@ -113,7 +124,7 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-14 sm:py-20 border-t border-[var(--color-border)]"
 >
   <h2 id="serier-tittel" class="font-display text-2xl sm:text-3xl md:text-4xl mb-8 sm:mb-10">
-    {t(lang, "series.title")}
+    {site.homeSeriesTitle[lang]}
   </h2>
   <ul class="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-3 list-none p-0">
     {
@@ -140,7 +151,7 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
       class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-14 sm:py-20 border-t border-[var(--color-border)]"
     >
       <h2 id="siste-tittel" class="font-display text-2xl sm:text-3xl md:text-4xl mb-8 sm:mb-10">
-        {t(lang, "latest.title")}
+        {site.homeLatestTitle[lang]}
       </h2>
       <ul class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4 list-none p-0">
         {featured.map((artwork) => (
@@ -150,7 +161,7 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
         ))}
       </ul>
       <p class="mt-10">
-        <a href={r.artworks}>{t(lang, "latest.viewAll")} →</a>
+        <a href={r.artworks}>{site.homeLatestViewAll[lang]} →</a>
       </p>
     </section>
   )
@@ -161,27 +172,25 @@ const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 py-14 sm:py-20 border-t border-[var(--color-border)]"
 >
   <h2 id="kontakt-tittel" class="font-display text-2xl sm:text-3xl md:text-4xl mb-5 sm:mb-6">
-    {t(lang, "contact.title")}
+    {site.homeContactTitle[lang]}
   </h2>
   <p
     class="max-w-[var(--container-prose)] text-lg text-[var(--color-muted)] mb-8"
   >
-    {t(lang, "contact.body")}
+    {site.homeContactBody[lang]}
   </p>
   <p class="flex flex-wrap gap-4">
     <a
-      href={`mailto:${artist.email}?subject=${encodeURIComponent(
-        lang === "no" ? "Forespørsel om kunstverk" : "Artwork inquiry",
-      )}`}
+      href={`mailto:${artist.email}?subject=${encodeURIComponent(subject)}`}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "contact.email")}
+      {site.homeContactEmailButton[lang]}
     </a>
     <a
       href={`tel:${artist.phoneRaw}`}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "contact.phone")}
+      {site.homeContactPhoneButton[lang]}
     </a>
   </p>
 </section>

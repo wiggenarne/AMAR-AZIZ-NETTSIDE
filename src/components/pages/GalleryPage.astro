@@ -1,14 +1,14 @@
 ---
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, type Lang } from "../../i18n/ui";
-import { getArtworks } from "../../sanity/content";
+import { getArtworks, getSiteContent } from "../../sanity/content";
 
 interface Props {
   lang: Lang;
 }
 
 const { lang } = Astro.props;
-const all = await getArtworks();
+const [all, site] = await Promise.all([getArtworks(), getSiteContent()]);
 const sorted = all.sort((a, b) => a.data.order - b.data.order);
 ---
 
@@ -16,12 +16,12 @@ const sorted = all.sort((a, b) => a.data.order - b.data.order);
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
   <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-5 sm:mb-6">
-    {t(lang, "gallery.title")}
+    {site.galleryTitle[lang]}
   </h1>
   <p
     class="max-w-[var(--container-prose)] text-base sm:text-lg text-[var(--color-muted)]"
   >
-    {t(lang, "gallery.intro")}
+    {site.galleryIntro[lang]}
   </p>
 </section>
 

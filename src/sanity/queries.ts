@@ -125,3 +125,69 @@ export function imageUrl(image: SanityImage, width?: number): string {
   if (width) b = b.width(width);
   return b.url();
 }
+
+export type SiteContentDoc = {
+  heroEyebrow?: LocaleString;
+  heroLede?: LocaleString;
+  heroCtaPrimary?: LocaleString;
+  heroCtaSecondary?: LocaleString;
+  homeAboutTitle?: LocaleString;
+  homeAboutBody?: LocaleString;
+  homeAboutMore?: LocaleString;
+  homeSeriesTitle?: LocaleString;
+  homeLatestTitle?: LocaleString;
+  homeLatestViewAll?: LocaleString;
+  homeContactTitle?: LocaleString;
+  homeContactBody?: LocaleString;
+  homeContactEmailButton?: LocaleString;
+  homeContactPhoneButton?: LocaleString;
+  galleryTitle?: LocaleString;
+  galleryIntro?: LocaleString;
+  seriesIndexTitle?: LocaleString;
+  seriesIndexIntro?: LocaleString;
+  exhibitionsTitle?: LocaleString;
+  exhibitionsIntro?: LocaleString;
+  siteTitle?: LocaleString;
+  siteDescription?: LocaleString;
+  footerRights?: LocaleString;
+};
+
+export type CvEntryDoc = { years: string; text: LocaleString };
+
+export type ArtistInfoDoc = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  phoneRaw?: string;
+  addressStreet?: string;
+  addressPostalCode?: string;
+  addressCity?: string;
+  addressCountry?: string;
+  social?: { label: string; url: string }[];
+  contactHeading?: LocaleString;
+  contactIntro?: LocaleString;
+  contactEmailLabel?: LocaleString;
+  contactPhoneLabel?: LocaleString;
+  contactAddressLabel?: LocaleString;
+  contactSocialLabel?: LocaleString;
+  born?: number;
+  birthplace?: string;
+  aboutHeading?: LocaleString;
+  bioNo?: string[];
+  bioEn?: string[];
+  educationTitle?: LocaleString;
+  education?: CvEntryDoc[];
+  careerTitle?: LocaleString;
+  career?: CvEntryDoc[];
+  membershipsTitle?: LocaleString;
+  membershipsNo?: string[];
+  membershipsEn?: string[];
+};
+
+export async function getSiteContent(): Promise<SiteContentDoc | null> {
+  return sanityClient.fetch(`*[_type == "siteContent"][0]`);
+}
+
+export async function getArtistInfo(): Promise<ArtistInfoDoc | null> {
+  return sanityClient.fetch(`*[_type == "artistInfo"][0]`);
+}

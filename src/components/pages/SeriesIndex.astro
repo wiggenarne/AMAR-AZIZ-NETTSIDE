@@ -1,6 +1,10 @@
 ---
-import { t, routes, type Lang } from "../../i18n/ui";
-import { getArtworks, getSeries } from "../../sanity/content";
+import { routes, type Lang } from "../../i18n/ui";
+import {
+  getArtworks,
+  getSeries,
+  getSiteContent,
+} from "../../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -9,10 +13,13 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 
-const allSeries = await getSeries();
+const [allSeries, allArtworks, site] = await Promise.all([
+  getSeries(),
+  getArtworks(),
+  getSiteContent(),
+]);
 const sorted = allSeries.sort((a, b) => a.data.order - b.data.order);
 
-const allArtworks = await getArtworks();
 const countBySeries = new Map<string, number>();
 for (const art of allArtworks) {
   if (art.data.series) {
@@ -28,12 +35,12 @@ const worksLabel = lang === "no" ? "verk" : "works";
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
   <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-5 sm:mb-6">
-    {t(lang, "series.title")}
+    {site.seriesIndexTitle[lang]}
   </h1>
   <p
     class="max-w-[var(--container-prose)] text-base sm:text-lg text-[var(--color-muted)]"
   >
-    {t(lang, "series.intro")}
+    {site.seriesIndexIntro[lang]}
   </p>
 </section>
 
