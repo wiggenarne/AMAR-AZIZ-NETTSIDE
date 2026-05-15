@@ -4,6 +4,8 @@ export const siteContent = defineType({
   name: "siteContent",
   title: "Tekst på nettsiden",
   type: "document",
+  description:
+    "Her redigerer du fast tekst på nettsiden: hero, intro-tekster, knappetekster og titler. Bruk fanene nedenfor for å bytte mellom sidene. Verk, serier og utstillinger redigeres separat fra venstre meny.",
   groups: [
     { name: "home", title: "Forsiden", default: true },
     { name: "gallery", title: "Galleri" },

@@ -7,7 +7,8 @@ export const cvEntry = defineType({
   fields: [
     {
       name: "years",
-      title: "Årstall (f.eks. '2014–2018')",
+      title: "Årstall",
+      description: "F.eks. '2014–2018' eller '2004–' for pågående.",
       type: "string",
       validation: (r) => r.required(),
     },
@@ -30,21 +31,25 @@ export const socialLink = defineType({
   fields: [
     {
       name: "label",
-      title: "Navn (Instagram, Facebook, osv.)",
+      title: "Navn på lenken",
+      description: "F.eks. 'Instagram', 'Facebook', 'NorthArt'.",
       type: "string",
       validation: (r) => r.required(),
     },
     {
       name: "url",
-      title: "URL",
+      title: "Nettadresse",
+      description: "Full URL, inkludert https://",
       type: "url",
-      validation: (r) => r.required(),
+      validation: (r) => r.required().uri({ scheme: ["http", "https"] }),
     },
   ],
   preview: {
     select: { title: "label", subtitle: "url" },
   },
 });
+
+const currentYear = new Date().getFullYear();
 
 export const artistInfo = defineType({
   name: "artistInfo",
@@ -66,19 +71,27 @@ export const artistInfo = defineType({
     defineField({
       name: "email",
       title: "E-post",
+      description:
+        "E-postadressen som vises på siden og brukes for 'Send e-post'-knappen.",
       type: "string",
+      validation: (r) =>
+        r.required().email().error("Skriv inn en gyldig e-postadresse."),
       group: "contact",
     }),
     defineField({
       name: "phone",
-      title: "Telefon (vises på siden, f.eks. '+47 452 83 915')",
+      title: "Telefon (vises på siden)",
+      description: "F.eks. '+47 452 83 915'. Mellomrom og bindestreker er OK.",
       type: "string",
       group: "contact",
     }),
     defineField({
       name: "phoneRaw",
-      title: "Telefon for tel:-lenke (uten mellomrom, f.eks. '+4745283915')",
+      title: "Telefon for klikk-til-ringe",
+      description:
+        "Genereres automatisk ved oppsett. Trenger normalt ikke endres — gjelder kun selve klikk-å-ringe-lenken.",
       type: "string",
+      readOnly: true,
       group: "contact",
     }),
     defineField({
@@ -108,6 +121,8 @@ export const artistInfo = defineType({
     defineField({
       name: "social",
       title: "Sosiale lenker",
+      description:
+        "Lenker til Instagram, Facebook, eller andre profiler. Bruk '+'-knappen for å legge til.",
       type: "array",
       of: [{ type: "socialLink" }],
       group: "contact",
@@ -154,6 +169,12 @@ export const artistInfo = defineType({
       name: "born",
       title: "Født (årstall)",
       type: "number",
+      validation: (r) =>
+        r
+          .integer()
+          .min(1900)
+          .max(currentYear)
+          .error("Årstallet må være mellom 1900 og i år."),
       group: "about",
     }),
     defineField({
@@ -170,14 +191,18 @@ export const artistInfo = defineType({
     }),
     defineField({
       name: "bioNo",
-      title: "Biografi – norsk (ett avsnitt per linje)",
+      title: "Biografi – norsk",
+      description:
+        "Skriv ett avsnitt per innslag. Bruk '+'-knappen for å legge til et nytt avsnitt.",
       type: "array",
       of: [{ type: "text", rows: 4 }],
       group: "about",
     }),
     defineField({
       name: "bioEn",
-      title: "Biografi – engelsk (ett avsnitt per linje)",
+      title: "Biografi – engelsk",
+      description:
+        "Skriv ett avsnitt per innslag. Kan stå tom hvis du kun ønsker norsk biografi.",
       type: "array",
       of: [{ type: "text", rows: 4 }],
       group: "about",
@@ -186,46 +211,51 @@ export const artistInfo = defineType({
     // CV
     defineField({
       name: "educationTitle",
-      title: "CV – overskrift 'Utdanning'",
+      title: "Overskrift 'Utdanning'",
       type: "localeString",
       group: "cv",
     }),
     defineField({
       name: "education",
       title: "Utdanning",
+      description: "Legg til én rad per skole/utdanning. Bruk '+'-knappen.",
       type: "array",
       of: [{ type: "cvEntry" }],
       group: "cv",
     }),
     defineField({
       name: "careerTitle",
-      title: "CV – overskrift 'Karriere'",
+      title: "Overskrift 'Karriere'",
       type: "localeString",
       group: "cv",
     }),
     defineField({
       name: "career",
       title: "Karriere",
+      description: "Legg til én rad per jobb/posisjon. Bruk '+'-knappen.",
       type: "array",
       of: [{ type: "cvEntry" }],
       group: "cv",
     }),
     defineField({
       name: "membershipsTitle",
-      title: "CV – overskrift 'Medlemskap'",
+      title: "Overskrift 'Medlemskap'",
       type: "localeString",
       group: "cv",
     }),
     defineField({
       name: "membershipsNo",
       title: "Medlemskap – norsk",
+      description: "Én forening/medlemskap per rad.",
       type: "array",
       of: [{ type: "string" }],
       group: "cv",
     }),
     defineField({
       name: "membershipsEn",
-      title: "Memberships – English",
+      title: "Medlemskap – engelsk",
+      description:
+        "Engelske navn på medlemskapene. Kan stå tom hvis kun norsk brukes.",
       type: "array",
       of: [{ type: "string" }],
       group: "cv",

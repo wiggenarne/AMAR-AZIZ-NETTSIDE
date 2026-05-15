@@ -5,8 +5,19 @@ export const localeString = defineType({
   title: "Tekst (NO/EN)",
   type: "object",
   fields: [
-    { name: "no", title: "Norsk", type: "string" },
-    { name: "en", title: "English", type: "string" },
+    {
+      name: "no",
+      title: "Norsk",
+      description: "Norsk tekst. Vises som standard på nettsiden.",
+      type: "string",
+    },
+    {
+      name: "en",
+      title: "Engelsk",
+      description:
+        "Engelsk versjon. Kan stå tom hvis du kun ønsker norsk på siden.",
+      type: "string",
+    },
   ],
 });
 
@@ -15,7 +26,20 @@ export const localeText = defineType({
   title: "Lengre tekst (NO/EN)",
   type: "object",
   fields: [
-    { name: "no", title: "Norsk", type: "text", rows: 4 },
-    { name: "en", title: "English", type: "text", rows: 4 },
+    {
+      name: "no",
+      title: "Norsk",
+      description: "Norsk tekst. Vises som standard på nettsiden.",
+      type: "text",
+      rows: 4,
+    },
+    {
+      name: "en",
+      title: "Engelsk",
+      description:
+        "Engelsk versjon. Kan stå tom hvis du kun ønsker norsk på siden.",
+      type: "text",
+      rows: 4,
+    },
   ],
 });
