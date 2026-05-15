@@ -22,6 +22,7 @@ export type ArtworkDoc = {
   available: boolean;
   featured: boolean;
   order: number;
+  salesUrl?: string;
 };
 
 export type SeriesDoc = {
@@ -59,7 +60,8 @@ const ARTWORK_PROJECTION = `{
   description,
   "available": coalesce(available, true),
   "featured": coalesce(featured, false),
-  "order": coalesce(order, 0)
+  "order": coalesce(order, 0),
+  salesUrl
 }`;
 
 const SERIES_PROJECTION = `{

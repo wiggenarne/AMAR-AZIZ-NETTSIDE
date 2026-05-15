@@ -1,6 +1,6 @@
 ---
 import { type Lang } from "../i18n/ui";
-import { artist } from "../data/settings";
+import { getArtistInfo } from "../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -10,18 +10,32 @@ interface Props {
   dimensions: string;
   url: string;
   available: boolean;
+  salesUrl?: string;
 }
 
-const { lang, title, year, medium, dimensions, url, available } = Astro.props;
+const {
+  lang,
+  title,
+  year,
+  medium,
+  dimensions,
+  url,
+  available,
+  salesUrl,
+} = Astro.props;
+
+const artist = await getArtistInfo();
 
 const labels = {
   no: {
     inquire: "Forespør pris",
+    buyExternal: "Kjøp på NorthArt →",
     sold: "Solgt – kontakt for liknende",
     call: "Ring kunstneren",
   },
   en: {
     inquire: "Inquire about price",
+    buyExternal: "Buy on NorthArt →",
     sold: "Sold – contact for similar",
     call: "Call the artist",
   },
@@ -37,17 +51,27 @@ const body =
     ? `Hei Amar,\n\nJeg er interessert i verket «${title}» (${medium}, ${dimensions}, ${year}).\nLenke: ${url}\n\nVennlig hilsen,\n`
     : `Hello Amar,\n\nI'm interested in the work "${title}" (${medium}, ${dimensions}, ${year}).\nLink: ${url}\n\nKind regards,\n`;
 
-const mailto = `mailto:amar260651@gmail.com?subject=${encodeURIComponent(
+const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(
   subject,
 )}&body=${encodeURIComponent(body)}`;
 
-const primaryLabel = available ? labels[lang].inquire : labels[lang].sold;
+const useSalesUrl = available && Boolean(salesUrl);
+const primaryHref = useSalesUrl ? (salesUrl as string) : mailto;
+const primaryLabel = !available
+  ? labels[lang].sold
+  : useSalesUrl
+    ? labels[lang].buyExternal
+    : labels[lang].inquire;
+const primaryExternal = useSalesUrl;
 ---
 
 <p class="flex flex-wrap gap-3">
   <a
-    href={mailto}
+    href={primaryHref}
     class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
+    {...primaryExternal
+      ? { target: "_blank", rel: "noopener noreferrer" }
+      : {}}
   >
     {primaryLabel}
   </a>

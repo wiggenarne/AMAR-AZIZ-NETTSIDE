@@ -90,6 +90,14 @@ export const artwork = defineType({
       initialValue: true,
     }),
     defineField({
+      name: "salesUrl",
+      title: "Lenke til salg (NorthArt eller annen butikk)",
+      description:
+        "Hvis verket selges på NorthArt eller et annet galleri på nett, lim inn lenken her. 'Forespør pris'-knappen blir da til 'Kjøp på NorthArt' og fører kunden direkte dit. La stå tom hvis du foretrekker at de tar kontakt på e-post.",
+      type: "url",
+      validation: (r) => r.uri({ scheme: ["http", "https"] }),
+    }),
+    defineField({
       name: "featured",
       title: "Fremhevet på forsiden",
       description:
