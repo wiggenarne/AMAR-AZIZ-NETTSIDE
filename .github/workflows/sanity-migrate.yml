@@ -3,6 +3,11 @@ name: Sanity migrering
 on:
   workflow_dispatch:
     inputs:
+      branch:
+        description: "Branch å hente kode fra"
+        required: true
+        default: "claude/resume-previous-work-BAnYG"
+        type: string
       mode:
         description: "Tørrkjøring (dry-run) eller ekte migrering?"
         required: true
@@ -18,6 +23,8 @@ jobs:
     steps:
       - name: Hent ut koden
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Sett opp Node
         uses: actions/setup-node@v4
@@ -30,8 +37,8 @@ jobs:
 
       - name: Kjør migrering
         env:
-          PUBLIC_SANITY_PROJECT_ID: ${{ secrets.PUBLIC_SANITY_PROJECT_ID || '4tuzsh1b' }}
-          PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET || 'production' }}
+          PUBLIC_SANITY_PROJECT_ID: "4tuzsh1b"
+          PUBLIC_SANITY_DATASET: "production"
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
         run: |
           if [ "${{ inputs.mode }}" = "real" ]; then
@@ -43,9 +50,10 @@ jobs:
       - name: Oppsummering
         if: success()
         run: |
-          echo "## ✅ Migrering ferdig" >> $GITHUB_STEP_SUMMARY
+          echo "## Migrering ferdig" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: **${{ inputs.branch }}**" >> $GITHUB_STEP_SUMMARY
           echo "Modus: **${{ inputs.mode }}**" >> $GITHUB_STEP_SUMMARY
           if [ "${{ inputs.mode }}" = "real" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Innholdet er lastet opp til Sanity. Sjekk Studio på /studio for å verifisere." >> $GITHUB_STEP_SUMMARY
+            echo "Innholdet er lastet opp til Sanity. Sjekk Studio for å verifisere." >> $GITHUB_STEP_SUMMARY
           fi
