@@ -1,11 +1,10 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { getEntry } from "astro:content";
 import InquiryButton from "../InquiryButton.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
+import { getSeriesEntry, type ArtworkEntry } from "../../sanity/content";
 
 interface Props {
-  artwork: CollectionEntry<"artworks">;
+  artwork: ArtworkEntry;
   lang: Lang;
 }
 
@@ -21,7 +20,7 @@ const url = new URL(`${r.artworks}/${artwork.id}`, Astro.site).toString();
 
 let seriesData: { title: { no: string; en: string } } | null = null;
 if (data.series) {
-  const seriesEntry = await getEntry("series", data.series.id);
+  const seriesEntry = await getSeriesEntry(data.series.id);
   if (seriesEntry) seriesData = seriesEntry.data;
 }
 

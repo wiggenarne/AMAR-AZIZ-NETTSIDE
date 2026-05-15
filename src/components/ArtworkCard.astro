@@ -1,9 +1,9 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import { type Lang, routes } from "../i18n/ui";
+import type { ArtworkEntry } from "../sanity/content";
 
 interface Props {
-  artwork: CollectionEntry<"artworks">;
+  artwork: ArtworkEntry;
   lang: Lang;
 }
 

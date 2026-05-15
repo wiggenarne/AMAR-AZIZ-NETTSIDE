@@ -1,10 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SeriesDetail from "../../../components/pages/SeriesDetail.astro";
+import { getSeries } from "../../../sanity/content";
 
 export async function getStaticPaths() {
-  const series = await getCollection("series");
+  const series = await getSeries();
   return series.map((s) => ({
     params: { slug: s.id },
     props: { series: s },

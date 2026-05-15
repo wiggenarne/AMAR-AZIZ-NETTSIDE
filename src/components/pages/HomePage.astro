@@ -1,8 +1,8 @@
 ---
-import { getCollection } from "astro:content";
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
 import { artist } from "../../data/settings";
+import { getArtworks, getSeries } from "../../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -11,12 +11,11 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 
-const allArtworks = await getCollection("artworks");
+const allArtworks = await getArtworks();
 const byOrder = [...allArtworks].sort(
   (a, b) => a.data.order - b.data.order,
 );
 const explicitlyFeatured = byOrder.filter((a) => a.data.featured);
-// Fall back to "first by order" when nothing is explicitly marked featured.
 const featured = (explicitlyFeatured.length ? explicitlyFeatured : byOrder).slice(0, 4);
 
 const heroArtwork =
@@ -24,7 +23,7 @@ const heroArtwork =
   explicitlyFeatured[0] ??
   byOrder[0];
 
-const allSeries = await getCollection("series");
+const allSeries = await getSeries();
 const sortedSeries = allSeries.sort((a, b) => a.data.order - b.data.order);
 ---
 

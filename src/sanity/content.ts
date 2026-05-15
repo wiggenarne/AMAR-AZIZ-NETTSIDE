@@ -1,0 +1,137 @@
+import {
+  getArtworks as fetchArtworks,
+  getArtwork as fetchArtwork,
+  getAllSeries as fetchAllSeries,
+  getSeriesBySlug as fetchSeriesBySlug,
+  getArtworksInSeries as fetchArtworksInSeries,
+  getExhibitions as fetchExhibitions,
+  imageUrl,
+  type ArtworkDoc,
+  type SeriesDoc,
+  type ExhibitionDoc,
+} from "./queries";
+
+export type LocaleString = { no: string; en: string };
+
+export type ArtworkEntry = {
+  id: string;
+  data: {
+    title: LocaleString;
+    image: string;
+    width_cm: number;
+    height_cm: number;
+    depth_cm?: number;
+    medium: LocaleString;
+    year: number;
+    series?: { id: string };
+    description: LocaleString;
+    available: boolean;
+    featured: boolean;
+    order: number;
+  };
+};
+
+export type SeriesEntry = {
+  id: string;
+  data: {
+    title: LocaleString;
+    statement: LocaleString;
+    cover?: string;
+    order: number;
+  };
+};
+
+export type ExhibitionEntry = {
+  id: string;
+  data: {
+    title: LocaleString;
+    venue: string;
+    city: string;
+    country: string;
+    startDate: Date;
+    endDate?: Date;
+    type: "solo" | "group";
+    link?: string;
+  };
+};
+
+const ARTWORK_IMG_WIDTH = 1600;
+const COVER_IMG_WIDTH = 1400;
+
+function artworkToEntry(doc: ArtworkDoc): ArtworkEntry {
+  return {
+    id: doc.slug,
+    data: {
+      title: doc.title,
+      image: doc.image ? imageUrl(doc.image, ARTWORK_IMG_WIDTH) : "",
+      width_cm: doc.width_cm,
+      height_cm: doc.height_cm,
+      depth_cm: doc.depth_cm,
+      medium: doc.medium,
+      year: doc.year,
+      series: doc.seriesSlug ? { id: doc.seriesSlug } : undefined,
+      description: doc.description ?? { no: "", en: "" },
+      available: doc.available,
+      featured: doc.featured,
+      order: doc.order,
+    },
+  };
+}
+
+function seriesToEntry(doc: SeriesDoc): SeriesEntry {
+  return {
+    id: doc.slug,
+    data: {
+      title: doc.title,
+      statement: doc.statement ?? { no: "", en: "" },
+      cover: doc.cover ? imageUrl(doc.cover, COVER_IMG_WIDTH) : undefined,
+      order: doc.order,
+    },
+  };
+}
+
+function exhibitionToEntry(doc: ExhibitionDoc): ExhibitionEntry {
+  return {
+    id: doc._id,
+    data: {
+      title: doc.title,
+      venue: doc.venue,
+      city: doc.city,
+      country: doc.country,
+      startDate: new Date(doc.startDate),
+      endDate: doc.endDate ? new Date(doc.endDate) : undefined,
+      type: doc.type,
+      link: doc.link,
+    },
+  };
+}
+
+export async function getArtworks(): Promise<ArtworkEntry[]> {
+  const docs = await fetchArtworks();
+  return docs.map(artworkToEntry);
+}
+
+export async function getArtwork(slug: string): Promise<ArtworkEntry | null> {
+  const doc = await fetchArtwork(slug);
+  return doc ? artworkToEntry(doc) : null;
+}
+
+export async function getSeries(): Promise<SeriesEntry[]> {
+  const docs = await fetchAllSeries();
+  return docs.map(seriesToEntry);
+}
+
+export async function getSeriesEntry(slug: string): Promise<SeriesEntry | null> {
+  const doc = await fetchSeriesBySlug(slug);
+  return doc ? seriesToEntry(doc) : null;
+}
+
+export async function getArtworksInSeries(seriesSlug: string): Promise<ArtworkEntry[]> {
+  const docs = await fetchArtworksInSeries(seriesSlug);
+  return docs.map(artworkToEntry);
+}
+
+export async function getExhibitions(): Promise<ExhibitionEntry[]> {
+  const docs = await fetchExhibitions();
+  return docs.map(exhibitionToEntry);
+}

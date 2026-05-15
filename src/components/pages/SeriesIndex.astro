@@ -1,6 +1,6 @@
 ---
-import { getCollection } from "astro:content";
 import { t, routes, type Lang } from "../../i18n/ui";
+import { getArtworks, getSeries } from "../../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -9,10 +9,10 @@ interface Props {
 const { lang } = Astro.props;
 const r = routes[lang];
 
-const allSeries = await getCollection("series");
+const allSeries = await getSeries();
 const sorted = allSeries.sort((a, b) => a.data.order - b.data.order);
 
-const allArtworks = await getCollection("artworks");
+const allArtworks = await getArtworks();
 const countBySeries = new Map<string, number>();
 for (const art of allArtworks) {
   if (art.data.series) {

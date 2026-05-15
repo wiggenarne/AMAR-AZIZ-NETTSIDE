@@ -1,11 +1,10 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
+import { getArtworksInSeries, type SeriesEntry } from "../../sanity/content";
 
 interface Props {
-  series: CollectionEntry<"series">;
+  series: SeriesEntry;
   lang: Lang;
 }
 
@@ -15,10 +14,9 @@ const data = series.data;
 const title = data.title[lang];
 const statement = data.statement[lang];
 
-const allArtworks = await getCollection("artworks");
-const works = allArtworks
-  .filter((a) => a.data.series?.id === series.id)
-  .sort((a, b) => a.data.order - b.data.order);
+const works = (await getArtworksInSeries(series.id)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 ---
 
 <section
