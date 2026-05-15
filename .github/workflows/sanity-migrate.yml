@@ -1,0 +1,51 @@
+name: Sanity migrering
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Tørrkjøring (dry-run) eller ekte migrering?"
+        required: true
+        default: "dry-run"
+        type: choice
+        options:
+          - dry-run
+          - real
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hent ut koden
+        uses: actions/checkout@v4
+
+      - name: Sett opp Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Installer dependencies
+        run: npm ci
+
+      - name: Kjør migrering
+        env:
+          PUBLIC_SANITY_PROJECT_ID: ${{ secrets.PUBLIC_SANITY_PROJECT_ID || '4tuzsh1b' }}
+          PUBLIC_SANITY_DATASET: ${{ secrets.PUBLIC_SANITY_DATASET || 'production' }}
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: |
+          if [ "${{ inputs.mode }}" = "real" ]; then
+            node scripts/migrate-to-sanity.js
+          else
+            node scripts/migrate-to-sanity.js --dry-run
+          fi
+
+      - name: Oppsummering
+        if: success()
+        run: |
+          echo "## ✅ Migrering ferdig" >> $GITHUB_STEP_SUMMARY
+          echo "Modus: **${{ inputs.mode }}**" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ inputs.mode }}" = "real" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Innholdet er lastet opp til Sanity. Sjekk Studio på /studio for å verifisere." >> $GITHUB_STEP_SUMMARY
+          fi
