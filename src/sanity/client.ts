@@ -7,7 +7,7 @@ const dataset = import.meta.env.PUBLIC_SANITY_DATASET ?? "production";
 
 if (!projectId) {
   throw new Error(
-    "PUBLIC_SANITY_PROJECT_ID mangler. Legg den i .env (se .env.example)."
+    "PUBLIC_SANITY_PROJECT_ID mangler. Legg den i .env (se .env.example).",
   );
 }
 
@@ -17,6 +17,10 @@ export const sanityClient = createClient({
   apiVersion: "2024-10-01",
   useCdn: true,
   perspective: "published",
+  stega: {
+    enabled: true,
+    studioUrl: "/studio",
+  },
 });
 
 const builder = createImageUrlBuilder(sanityClient);

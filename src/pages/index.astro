@@ -1,14 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HomePage from "../components/pages/HomePage.astro";
-import { t } from "../i18n/ui";
+import { getSiteContent } from "../sanity/content";
 
 const lang = "no";
+const site = await getSiteContent();
 ---
 
 <BaseLayout
-  title={t(lang, "site.title")}
-  description={t(lang, "site.description")}
+  title={site.siteTitle[lang]}
+  description={site.siteDescription[lang]}
   lang={lang}
 >
   <HomePage lang={lang} />

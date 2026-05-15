@@ -1,27 +1,30 @@
 ---
-import { t, type Lang } from "../../i18n/ui";
-import { artist } from "../../data/settings";
+import { type Lang } from "../../i18n/ui";
+import { getArtistInfo } from "../../sanity/content";
 
 interface Props {
   lang: Lang;
 }
 
 const { lang } = Astro.props;
-const subject =
-  lang === "no" ? "Forespørsel om kunstverk" : "Artwork inquiry";
+const artist = await getArtistInfo();
+
+const subject = lang === "no" ? "Forespørsel om kunstverk" : "Artwork inquiry";
 const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
+const emailButton = lang === "no" ? "Send e-post" : "Send email";
+const phoneButton = lang === "no" ? "Ring kunstneren" : "Call the artist";
 ---
 
 <section
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
   <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-5 sm:mb-6">
-    {t(lang, "contact.heading")}
+    {artist.contactHeading[lang]}
   </h1>
   <p
     class="max-w-[var(--container-prose)] text-base sm:text-lg text-[var(--color-muted)] mb-8 sm:mb-10"
   >
-    {t(lang, "contact.body")}
+    {artist.contactIntro[lang]}
   </p>
 
   <p class="flex flex-wrap gap-3 sm:gap-4">
@@ -29,13 +32,13 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
       href={mailto}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "contact.email")}
+      {emailButton}
     </a>
     <a
       href={`tel:${artist.phoneRaw}`}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "contact.phone")}
+      {phoneButton}
     </a>
   </p>
 </section>
@@ -47,7 +50,7 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
     <h2
       class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)] mb-4"
     >
-      {t(lang, "contact.email.label")}
+      {artist.contactEmailLabel[lang]}
     </h2>
     <p class="font-display text-lg">
       <a href={`mailto:${artist.email}`}>{artist.email}</a>
@@ -58,7 +61,7 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
     <h2
       class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)] mb-4"
     >
-      {t(lang, "contact.phone.label")}
+      {artist.contactPhoneLabel[lang]}
     </h2>
     <p class="font-display text-lg">
       <a href={`tel:${artist.phoneRaw}`}>{artist.phone}</a>
@@ -69,13 +72,13 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
     <h2
       class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)] mb-4"
     >
-      {t(lang, "contact.address")}
+      {artist.contactAddressLabel[lang]}
     </h2>
     <p class="font-display text-lg leading-snug">
       {artist.name}<br />
-      {artist.address.street}<br />
-      {artist.address.postalCode} {artist.address.city}<br />
-      {artist.address.country}
+      {artist.addressStreet}<br />
+      {artist.addressPostalCode} {artist.addressCity}<br />
+      {artist.addressCountry}
     </p>
   </address>
 </section>
@@ -86,7 +89,7 @@ const mailto = `mailto:${artist.email}?subject=${encodeURIComponent(subject)}`;
   <h2
     class="text-xs uppercase tracking-[0.25em] text-[var(--color-muted)] mb-4"
   >
-    {t(lang, "contact.social")}
+    {artist.contactSocialLabel[lang]}
   </h2>
   <ul class="flex flex-wrap gap-6 list-none p-0">
     {

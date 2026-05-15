@@ -1,6 +1,11 @@
 ---
-import { t, routes, type Lang } from "../../i18n/ui";
-import { artist, bio, cv } from "../../data/settings";
+import { routes, type Lang } from "../../i18n/ui";
+import {
+  getArtistInfo,
+  getSiteContent,
+  bio,
+  memberships,
+} from "../../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -8,33 +13,16 @@ interface Props {
 
 const { lang } = Astro.props;
 const r = routes[lang];
-const paragraphs = bio[lang];
-const cvData = cv[lang];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: artist.name,
-  birthPlace: artist.birthplace,
-  birthDate: String(artist.born),
-  email: artist.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: artist.address.street,
-    postalCode: artist.address.postalCode,
-    addressLocality: artist.address.city,
-    addressCountry: "NO",
-  },
-  jobTitle: lang === "no" ? "Billedkunstner" : "Visual artist",
-  sameAs: artist.social.map((s) => s.url),
-};
+const [artist, site] = await Promise.all([getArtistInfo(), getSiteContent()]);
+const paragraphs = bio(artist, lang);
 ---
 
 <section
   class="max-w-[var(--container-page)] mx-auto px-4 sm:px-6 pt-10 sm:pt-16 md:pt-20 pb-8 sm:pb-12"
 >
   <h1 class="font-display text-[clamp(2.25rem,7vw,4rem)] mb-8 sm:mb-10">
-    {t(lang, "about.heading")}
+    {artist.aboutHeading[lang]}
   </h1>
   <div
     class="max-w-[var(--container-prose)] space-y-5 text-base sm:text-lg text-[var(--color-text)]"
@@ -48,41 +36,43 @@ const jsonLd = {
 >
   <div>
     <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">
-      {t(lang, "about.cv.education")}
+      {artist.educationTitle[lang]}
     </h2>
     <ul class="space-y-3 list-none p-0">
       {
-        cvData.education.map((row) => (
+        artist.education.map((row) => (
           <li class="grid grid-cols-[7rem_1fr] gap-4 text-sm">
             <span class="text-[var(--color-muted)] tabular-nums">
               {row.years}
             </span>
-            <span>{row.text}</span>
+            <span>{row.text[lang]}</span>
           </li>
         ))
       }
     </ul>
   </div>
   <div>
-    <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">{t(lang, "about.cv.career")}</h2>
+    <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">
+      {artist.careerTitle[lang]}
+    </h2>
     <ul class="space-y-3 list-none p-0 mb-12">
       {
-        cvData.career.map((row) => (
+        artist.career.map((row) => (
           <li class="grid grid-cols-[7rem_1fr] gap-4 text-sm">
             <span class="text-[var(--color-muted)] tabular-nums">
               {row.years}
             </span>
-            <span>{row.text}</span>
+            <span>{row.text[lang]}</span>
           </li>
         ))
       }
     </ul>
 
     <h2 class="font-display text-xl sm:text-2xl mb-5 sm:mb-6">
-      {t(lang, "about.cv.memberships")}
+      {artist.membershipsTitle[lang]}
     </h2>
     <ul class="space-y-2 list-none p-0 text-sm">
-      {cvData.memberships.map((m) => <li>{m}</li>)}
+      {memberships(artist, lang).map((m) => <li>{m}</li>)}
     </ul>
   </div>
 </section>
@@ -95,19 +85,35 @@ const jsonLd = {
       href={r.artworks}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 bg-[var(--color-text)] text-[var(--color-bg)] no-underline hover:bg-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "hero.cta.primary")}
+      {site.heroCtaPrimary[lang]}
     </a>
     <a
       href={r.contact}
       class="inline-flex items-center justify-center min-h-12 px-6 py-3 border border-[var(--color-text)] no-underline hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
     >
-      {t(lang, "hero.cta.secondary")}
+      {site.heroCtaSecondary[lang]}
     </a>
   </p>
 </section>
 
 <script
   type="application/ld+json"
-  set:html={JSON.stringify(jsonLd)}
+  set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: artist.name,
+    birthPlace: artist.birthplace,
+    birthDate: String(artist.born),
+    email: artist.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: artist.addressStreet,
+      postalCode: artist.addressPostalCode,
+      addressLocality: artist.addressCity,
+      addressCountry: "NO",
+    },
+    jobTitle: lang === "no" ? "Billedkunstner" : "Visual artist",
+    sameAs: artist.social.map((s) => s.url),
+  })}
   is:inline
 />

@@ -11,7 +11,9 @@
     "astro": "astro",
     "fetch:northart": "node scripts/fetch-northart.js",
     "sanity:migrate": "node scripts/migrate-to-sanity.js",
-    "sanity:migrate:dry": "node scripts/migrate-to-sanity.js --dry-run"
+    "sanity:migrate:dry": "node scripts/migrate-to-sanity.js --dry-run",
+    "sanity:seed": "node scripts/seed-site-content.js",
+    "sanity:seed:dry": "node scripts/seed-site-content.js --dry-run"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.5",
