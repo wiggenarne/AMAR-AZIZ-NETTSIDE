@@ -7,13 +7,14 @@ export const exhibition = defineType({
   fields: [
     defineField({
       name: "title",
-      title: "Tittel",
+      title: "Tittel på utstillingen",
       type: "localeString",
       validation: (r) => r.required(),
     }),
     defineField({
       name: "venue",
-      title: "Sted/galleri",
+      title: "Sted / galleri",
+      description: "Navn på stedet eller galleriet hvor utstillingen er.",
       type: "string",
       validation: (r) => r.required(),
     }),
@@ -32,17 +33,19 @@ export const exhibition = defineType({
     defineField({
       name: "startDate",
       title: "Startdato",
+      description: "Velg dato fra kalenderen.",
       type: "date",
       validation: (r) => r.required(),
     }),
     defineField({
       name: "endDate",
       title: "Sluttdato",
+      description: "Valgfritt — la stå tom hvis utstillingen er pågående.",
       type: "date",
     }),
     defineField({
       name: "type",
-      title: "Type",
+      title: "Type utstilling",
       type: "string",
       options: {
         list: [
@@ -56,6 +59,8 @@ export const exhibition = defineType({
     defineField({
       name: "link",
       title: "Lenke",
+      description:
+        "Lenke til utstillingsstedet eller arrangementets nettside (valgfritt).",
       type: "url",
     }),
   ],
