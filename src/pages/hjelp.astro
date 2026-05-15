@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HelpPage from "../components/pages/HelpPage.astro";
+
+const lang = "no" as const;
+---
+
+<BaseLayout
+  title="Hjelp & bruksanvisning – Amar Aziz"
+  description="Slik redigerer du innholdet på nettsiden via Studio."
+  lang={lang}
+>
+  <HelpPage />
+</BaseLayout>
