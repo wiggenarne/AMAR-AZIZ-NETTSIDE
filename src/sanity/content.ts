@@ -34,6 +34,7 @@ export type ArtworkEntry = {
     available: boolean;
     featured: boolean;
     order: number;
+    salesUrl?: string;
   };
 };
 
@@ -80,6 +81,7 @@ function artworkToEntry(doc: ArtworkDoc): ArtworkEntry {
       available: doc.available,
       featured: doc.featured,
       order: doc.order,
+      salesUrl: doc.salesUrl,
     },
   };
 }
