@@ -1,14 +1,14 @@
 ---
-import { getCollection } from "astro:content";
 import ArtworkCard from "../ArtworkCard.astro";
 import { t, type Lang } from "../../i18n/ui";
+import { getArtworks } from "../../sanity/content";
 
 interface Props {
   lang: Lang;
 }
 
 const { lang } = Astro.props;
-const all = await getCollection("artworks");
+const all = await getArtworks();
 const sorted = all.sort((a, b) => a.data.order - b.data.order);
 ---
 

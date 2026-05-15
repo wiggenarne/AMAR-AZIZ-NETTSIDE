@@ -9,15 +9,28 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "fetch:northart": "node scripts/fetch-northart.js"
+    "fetch:northart": "node scripts/fetch-northart.js",
+    "sanity:migrate": "node scripts/migrate-to-sanity.js",
+    "sanity:migrate:dry": "node scripts/migrate-to-sanity.js --dry-run"
   },
   "dependencies": {
+    "@astrojs/react": "^5.0.5",
     "@astrojs/sitemap": "^3.2.1",
+    "@sanity/astro": "^3.4.0",
+    "@sanity/client": "^7.22.0",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^5.25.1",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.0.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "sanity": "^5.25.1",
+    "styled-components": "^6.4.1",
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "playwright": "^1.59.1"
   }
 }

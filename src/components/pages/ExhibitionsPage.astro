@@ -1,6 +1,6 @@
 ---
-import { getCollection } from "astro:content";
 import { t, type Lang } from "../../i18n/ui";
+import { getExhibitions, type ExhibitionEntry } from "../../sanity/content";
 
 interface Props {
   lang: Lang;
@@ -8,12 +8,12 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const all = await getCollection("exhibitions");
+const all = await getExhibitions();
 const sorted = all.sort(
   (a, b) => b.data.startDate.getTime() - a.data.startDate.getTime(),
 );
 
-type Group = { year: number; items: typeof sorted };
+type Group = { year: number; items: ExhibitionEntry[] };
 const grouped: Group[] = [];
 for (const ex of sorted) {
   const year = ex.data.startDate.getFullYear();

@@ -1,10 +1,10 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ArtworkDetail from "../../components/pages/ArtworkDetail.astro";
+import { getArtworks } from "../../sanity/content";
 
 export async function getStaticPaths() {
-  const artworks = await getCollection("artworks");
+  const artworks = await getArtworks();
   return artworks.map((artwork) => ({
     params: { slug: artwork.id },
     props: { artwork },
