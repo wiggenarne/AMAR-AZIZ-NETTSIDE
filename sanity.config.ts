@@ -20,7 +20,7 @@ export default defineConfig({
     presentationTool({
       previewUrl: {
         origin: previewUrl,
-        previewMode: { enable: "/api/preview" },
+        preview: "/",
       },
     }),
     structureTool({
