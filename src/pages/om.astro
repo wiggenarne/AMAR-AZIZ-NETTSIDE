@@ -1,15 +1,16 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import AboutPage from "../components/pages/AboutPage.astro";
-import { t } from "../i18n/ui";
-import { artist, bio } from "../data/settings";
+import { getArtistInfo, bio } from "../sanity/content";
 
-const lang = "no";
+const lang = "no" as const;
+const artist = await getArtistInfo();
+const firstBioParagraph = bio(artist, lang)[0] ?? "";
 ---
 
 <BaseLayout
-  title={`${t(lang, "about.heading")} – ${artist.name}`}
-  description={bio[lang][0]}
+  title={`${artist.aboutHeading[lang]} – ${artist.name}`}
+  description={firstBioParagraph}
   lang={lang}
 >
   <AboutPage lang={lang} />
