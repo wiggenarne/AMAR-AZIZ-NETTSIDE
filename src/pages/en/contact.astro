@@ -1,14 +1,15 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ContactPage from "../../components/pages/ContactPage.astro";
-import { t } from "../../i18n/ui";
+import { getArtistInfo } from "../../sanity/content";
 
-const lang = "en";
+const lang = "en" as const;
+const artist = await getArtistInfo();
 ---
 
 <BaseLayout
-  title={`${t(lang, "contact.heading")} – Amar Aziz`}
-  description={t(lang, "contact.body")}
+  title={`${artist.contactHeading[lang]} – ${artist.name}`}
+  description={artist.contactIntro[lang]}
   lang={lang}
 >
   <ContactPage lang={lang} />

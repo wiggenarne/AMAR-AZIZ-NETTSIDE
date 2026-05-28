@@ -1,7 +1,11 @@
 ---
 import InquiryButton from "../InquiryButton.astro";
 import { t, routes, type Lang } from "../../i18n/ui";
-import { getSeriesEntry, type ArtworkEntry } from "../../sanity/content";
+import {
+  getSeriesEntry,
+  getArtistInfo,
+  type ArtworkEntry,
+} from "../../sanity/content";
 
 interface Props {
   artwork: ArtworkEntry;
@@ -18,6 +22,8 @@ const dim = `${data.width_cm} × ${data.height_cm} cm`;
 const altText = `${title}, ${medium}, ${data.year}, ${dim}`;
 const url = new URL(`${r.artworks}/${artwork.id}`, Astro.site).toString();
 
+const artist = await getArtistInfo();
+
 let seriesData: { title: { no: string; en: string } } | null = null;
 if (data.series) {
   const seriesEntry = await getSeriesEntry(data.series.id);
@@ -28,7 +34,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "VisualArtwork",
   name: title,
-  creator: { "@type": "Person", name: "Amar Aziz" },
+  creator: { "@type": "Person", name: artist.name },
   artMedium: medium,
   width: { "@type": "Distance", name: `${data.width_cm} cm` },
   height: { "@type": "Distance", name: `${data.height_cm} cm` },
